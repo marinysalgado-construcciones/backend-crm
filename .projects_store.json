@@ -1,0 +1,82 @@
+[
+  {
+    "id": "urbanizacion-los-alamos",
+    "name": "Urbanización Los Álamos",
+    "projectType": "VIS",
+    "location": "Cartago, Sector Norte - Valle del Cauca",
+    "zone": "norte",
+    "status": "Preventa",
+    "priceRange": "Desde $195.750.000 COP (135 SMMLV)",
+    "priceCOP": 195750000,
+    "priceSMMLV": 135,
+    "description": "Urbanización Los Álamos combina armonía natural y arquitectura contemporánea en el Sector Norte de Cartago. Casas unifamiliares diseñadas con amplios espacios, ventilación cruzada e iluminación natural, pensadas para el bienestar familiar aplicando a subsidios VIS.",
+    "shortDescription": "Casas unifamiliares con acabados y diseño sismorresistente en el sector norte de mayor valorización.",
+    "constructionStage": "En Obra",
+    "heroImage": "https://lh3.googleusercontent.com/aida/AEtjO1WzmJjPEXcy05boPwamPvH-RWmZKkSpQIrpjrSpv6Q4LxVKYDdbK8PsmSECyKZdMmdzlPQh6V9yLAfEc2xGQHGsSe8I0m0UWUmXzxGu3Xl8JvkywVC4T_dAfB5eIjOkLwsyrNM0anNa6fgF3Lrwpyp5jahAzYzgrbqGfbPEn-NQxpWqM12_2hieP00HAIlF70_a7FnayH5LTZQvSg0tK8myZNUm6bQeR2Wz3mLFm2f6FToCFuYZUwCS4w",
+    "photos": [
+      "https://lh3.googleusercontent.com/aida/AEtjO1WzmJjPEXcy05boPwamPvH-RWmZKkSpQIrpjrSpv6Q4LxVKYDdbK8PsmSECyKZdMmdzlPQh6V9yLAfEc2xGQHGsSe8I0m0UWUmXzxGu3Xl8JvkywVC4T_dAfB5eIjOkLwsyrNM0anNa6fgF3Lrwpyp5jahAzYzgrbqGfbPEn-NQxpWqM12_2hieP00HAIlF70_a7FnayH5LTZQvSg0tK8myZNUm6bQeR2Wz3mLFm2f6FToCFuYZUwCS4w",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBHqJ_ir118AcH2J-Cod5Xvu0dujaPr8RzDy1_XflOrw2CfA3y5L3TOpGamsWbxxafJiZwxMJDB_826lP-V1vRbSXorqzmOYlEnkE9qwKw5eOZNg0n-fFca5irr6ufQFj_S8pUSsCP9LCTCSp25J-wBTyaXJtDFKvmS2jR9NJazm6LaGgB6YmvF7FVMfCIOdL1AsaPH1S7t3I97-9LH96thKb98upLb8BUtQqQustYZIYuDqr8CNs8",
+      "https://lh3.googleusercontent.com/aida/AEtjO1VFrhV5j_MgbF9jtQowlBY98hd68y9L8YQyV0lSbPoR14J6ff6ojnEBlirBSxbreQmoinTjJfwqRIRP7SkQDTZ13KweGSe1aW9AqCAWqK3sMNQK36iq97BOS1rJLn_ksYdZm6kmDU7H3e5G8l0r6Lt9EB-fE_n2GxYS5i0VGKssGI5tbz6y9uFJ5CkFznubskU0h44YPPP8Icrq-PiJVnUzOK0hwJqjxWmQujvHcR992AtYB6uB-qwVfA",
+      "https://lh3.googleusercontent.com/aida/AEtjO1VxP_eJG42s2s-PDqU7RtZp_pB5P_51FrMIZaUWR0-7OtCeK9zvvMxWJPDdH7L93LRwU9Lk62QEl6EPNx2Ma2KQLGSCalKV3pyLnR8e-aE1ljikXg4wiuR6xi8VEKCUfUyxIBykUCnQH3xJyjwxfnu1pmUzlPpAIVHAOnfFOMwIf9_gTb7NZoHSrhi2DNzg7vmlQCKlBqgLqT5qoqNefGETm2SSR38K9lKWhaFAJHcLKrkXJTaaI7qAeA"
+    ],
+    "features": [
+      {
+        "icon": "location_on",
+        "title": "Sector Norte",
+        "description": "Alta valorización y acceso rápido hacia Pereira."
+      },
+      {
+        "icon": "park",
+        "title": "Zonas Verdes y Parques",
+        "description": "Senderos ecológicos y juegos infantiles."
+      },
+      {
+        "icon": "verified",
+        "title": "Aplica Subsidio Mi Casa Ya",
+        "description": "Aplica a subsidios concurrentes de vivienda."
+      }
+    ],
+    "deliveryYear": "2025",
+    "createdAt": "2026-09-08T21:19:36.320Z"
+  },
+  {
+    "id": "residencial-el-saman",
+    "name": "Residencial El Samán",
+    "projectType": "VIS",
+    "location": "Cartago, Vía Zaragoza - Valle del Cauca",
+    "zone": "zaragoza",
+    "status": "Lanzamiento",
+    "priceRange": "Desde $159.500.000 COP (110 SMMLV)",
+    "priceCOP": 159500000,
+    "priceSMMLV": 110,
+    "description": "Residencial El Samán representa una oportunidad única para consolidar el sueño de tener vivienda propia en Cartago. Ubicado sobre la estratégica Vía Zaragoza a sólo 8 minutos del C.C. Nuestro Cartago, este conjunto ofrece apartamentos con excelente distribución, ascensor por torre y club house.",
+    "shortDescription": "Apartamentos modernos de 2 y 3 alcobas con balcón y club house en conjunto cerrado.",
+    "constructionStage": "En Obra",
+    "heroImage": "https://lh3.googleusercontent.com/aida/AEtjO1W0EFz6VMqBr_kurg6YW3huRcbip6yen7I7SDtBdHs9eFgO88uk8J68rbT9s-Y_N21I3yJexaoiJtgNyGx5nzsh-Ucz1eyxp9FyHjRGrhhivRPqnSNY9PkVrlT1S_LPWkmLUQr4V7B52PyBO-pUCEtU8WHQ_bNeWeW6drF9PJrawH4CKzqMiUbite2xRyvituo4e48RoX9jWRUfWQFrZXcnarWHVTsVNXkJXhFqdti6AqlBIJV3gazvAg",
+    "photos": [
+      "https://lh3.googleusercontent.com/aida/AEtjO1W0EFz6VMqBr_kurg6YW3huRcbip6yen7I7SDtBdHs9eFgO88uk8J68rbT9s-Y_N21I3yJexaoiJtgNyGx5nzsh-Ucz1eyxp9FyHjRGrhhivRPqnSNY9PkVrlT1S_LPWkmLUQr4V7B52PyBO-pUCEtU8WHQ_bNeWeW6drF9PJrawH4CKzqMiUbite2xRyvituo4e48RoX9jWRUfWQFrZXcnarWHVTsVNXkJXhFqdti6AqlBIJV3gazvAg",
+      "https://lh3.googleusercontent.com/aida/AEtjO1Xkm-EjabtJIXey9IG_0bEyvEUAoyl_6sgjztSSYqdgys9TucJGrxc7pMyMabIZudZ_aisUvo1s0jZum47FyImHAlPzdTftWrdpsGOvuZB5pBAuQChQycmgOsSrL2qN_Spb05HzU0_-7u3eNwUAao0fISweXtFzjaGKMEXa2Gfs0UsE8UhPyQJiIQcUdDQPCEXkmLo3z_PumjExND44r6tE2EC5LjwL5dWl0yVV6uGIE97nD0K7fq10Hg",
+      "https://lh3.googleusercontent.com/aida/AEtjO1Uhw2n63djxQP4w06fDSFzqLjqk8_9pEOl3eZsXRF8jYCWk8931bdfAFmwNxzp--tYzjnuthnuTmy9Eti6bfyGRmFPe9_s-WqSjknUpCQr2NHqLVim11-fEAgtZ8gg7CfZZ7IGOuel6NIXb6SZvfNerFfJNs37EXtlGpRAdf1BasripI4nO2hRmLa_4uQlcjsAwpMXRp6PblfmgkVxRE7SY6uf5O8zgvPJ0vAqOBDdEkDWeN8D-piFegw",
+      "https://lh3.googleusercontent.com/aida/AEtjO1WJNa-Rr2H-VlTOHeDwCj3Xac21-qfxghonBmcbEUoY-pfvJO2TXLosNYooOweNzxbJITIzr73I7_VAhz-1ecSAYsPHgJ8pPBs1C64mT-IXucQA6DaONTF_ajQAmZCBzfd8hEtbl67-hqzO6ov7WIHj83Mp6P22hmWpurkg-gfrZsIOB0OUDipaYS1RfKVZz4PQ9c_jkQOFlFjq0KT83gVt86UbfYOQmj18vKUhouJKQMSQr8lyrvzSKQ"
+    ],
+    "features": [
+      {
+        "icon": "location_on",
+        "title": "Vía Zaragoza",
+        "description": "A 8 minutos del C.C. Nuestro Cartago con excelente transporte."
+      },
+      {
+        "icon": "pool",
+        "title": "Club House",
+        "description": "Piscina para adultos y niños, salón de eventos y BBQ."
+      },
+      {
+        "icon": "security",
+        "title": "Seguridad Privada",
+        "description": "Portería con control sistematizado 24/7."
+      }
+    ],
+    "deliveryYear": "2025 - 2026",
+    "createdAt": "2026-09-08T21:19:36.320Z"
+  }
+]

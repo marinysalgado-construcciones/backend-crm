@@ -1,0 +1,72 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Validar build de producción",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Probar servidor CRM local",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"start"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Compilar y preparar publicación",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Iniciar servidor de producción local",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"start"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Probar servidor corregido en puerto 3001",
+			"type": "shell",
+			"command": "$env:PORT='3001'; $env:NODE_ENV='production'; npm",
+			"args": [
+				"start"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Probar servidor corregido en puerto alterno",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"set PORT=3001&&set NODE_ENV=production&&npm start"
+			],
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

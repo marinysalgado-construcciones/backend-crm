@@ -1,0 +1,6 @@
+{
+  "name": "Marin & Salgado Construcciones S.A.S.",
+  "description": "Constructora de viviendas de interés social (VIS) estilo premium en Cartago, Valle del Cauca. Calculadora financiera VIS, chatbot inteligente y conexión a CRM Google Sheets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

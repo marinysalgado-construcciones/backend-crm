@@ -1,0 +1,100 @@
+[
+  {
+    "id": "prop-001",
+    "name": "Casa Tipo A · Manzana 3 Lote 12",
+    "projectId": "urbanizacion-los-alamos",
+    "projectName": "Urbanización Los Álamos",
+    "type": "Casa",
+    "location": "Cartago, Sector Norte",
+    "price": 195750000,
+    "status": "Disponible",
+    "area": 65,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "description": "Hermosa casa unifamiliar con 3 alcobas, sala comedor integrada, cocina con mesón en granito, patio de ropas independiente y parqueadero. Aplica subsidio Mi Casa Ya y Comfamiliar.",
+    "photos": [
+      "https://lh3.googleusercontent.com/aida/AEtjO1WzmJjPEXcy05boPwamPvH-RWmZKkSpQIrpjrSpv6Q4LxVKYDdbK8PsmSECyKZdMmdzlPQh6V9yLAfEc2xGQHGsSe8I0m0UWUmXzxGu3Xl8JvkywVC4T_dAfB5eIjOkLwsyrNM0anNa6fgF3Lrwpyp5jahAzYzgrbqGfbPEn-NQxpWqM12_2hieP00HAIlF70_a7FnayH5LTZQvSg0tK8myZNUm6bQeR2Wz3mLFm2f6FToCFuYZUwCS4w",
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBHqJ_ir118AcH2J-Cod5Xvu0dujaPr8RzDy1_XflOrw2CfA3y5L3TOpGamsWbxxafJiZwxMJDB_826lP-V1vRbSXorqzmOYlEnkE9qwKw5eOZNg0n-fFca5irr6ufQFj_S8pUSsCP9LCTCSp25J-wBTyaXJtDFKvmS2jR9NJazm6LaGgB6YmvF7FVMfCIOdL1AsaPH1S7t3I97-9LH96thKb98upLb8BUtQqQustYZIYuDqr8CNs8"
+    ],
+    "featured": true,
+    "createdAt": "2026-09-08T21:19:36.320Z"
+  },
+  {
+    "id": "prop-002",
+    "name": "Casa Tipo B Ampliada · Manzana 1 Lote 5",
+    "projectId": "urbanizacion-los-alamos",
+    "projectName": "Urbanización Los Álamos",
+    "type": "Casa",
+    "location": "Cartago, Sector Norte",
+    "price": 218000000,
+    "status": "Reservado",
+    "area": 78,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "description": "Casa con patio ampliado y estudio complementario. Acabados premium, ventanería acústica y diseño bioclimático.",
+    "photos": [
+      "https://lh3.googleusercontent.com/aida/AEtjO1VFrhV5j_MgbF9jtQowlBY98hd68y9L8YQyV0lSbPoR14J6ff6ojnEBlirBSxbreQmoinTjJfwqRIRP7SkQDTZ13KweGSe1aW9AqCAWqK3sMNQK36iq97BOS1rJLn_ksYdZm6kmDU7H3e5G8l0r6Lt9EB-fE_n2GxYS5i0VGKssGI5tbz6y9uFJ5CkFznubskU0h44YPPP8Icrq-PiJVnUzOK0hwJqjxWmQujvHcR992AtYB6uB-qwVfA",
+      "https://lh3.googleusercontent.com/aida/AEtjO1VxP_eJG42s2s-PDqU7RtZp_pB5P_51FrMIZaUWR0-7OtCeK9zvvMxWJPDdH7L93LRwU9Lk62QEl6EPNx2Ma2KQLGSCalKV3pyLnR8e-aE1ljikXg4wiuR6xi8VEKCUfUyxIBykUCnQH3xJyjwxfnu1pmUzlPpAIVHAOnfFOMwIf9_gTb7NZoHSrhi2DNzg7vmlQCKlBqgLqT5qoqNefGETm2SSR38K9lKWhaFAJHcLKrkXJTaaI7qAeA"
+    ],
+    "featured": true,
+    "createdAt": "2026-09-08T21:19:36.320Z"
+  },
+  {
+    "id": "prop-003",
+    "name": "Apartamento 302 · Torre 1 con Balcón",
+    "projectId": "residencial-el-saman",
+    "projectName": "Residencial El Samán",
+    "type": "Apartamento",
+    "location": "Cartago, Vía Zaragoza",
+    "price": 159500000,
+    "status": "Disponible",
+    "area": 54,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "description": "Apartamento en tercer piso con ascensor, vista hacia la piscina del club house, 3 habitaciones, alcoba principal con baño privado y balcón exterior.",
+    "photos": [
+      "https://lh3.googleusercontent.com/aida/AEtjO1W0EFz6VMqBr_kurg6YW3huRcbip6yen7I7SDtBdHs9eFgO88uk8J68rbT9s-Y_N21I3yJexaoiJtgNyGx5nzsh-Ucz1eyxp9FyHjRGrhhivRPqnSNY9PkVrlT1S_LPWkmLUQr4V7B52PyBO-pUCEtU8WHQ_bNeWeW6drF9PJrawH4CKzqMiUbite2xRyvituo4e48RoX9jWRUfWQFrZXcnarWHVTsVNXkJXhFqdti6AqlBIJV3gazvAg",
+      "https://lh3.googleusercontent.com/aida/AEtjO1Xkm-EjabtJIXey9IG_0bEyvEUAoyl_6sgjztSSYqdgys9TucJGrxc7pMyMabIZudZ_aisUvo1s0jZum47FyImHAlPzdTftWrdpsGOvuZB5pBAuQChQycmgOsSrL2qN_Spb05HzU0_-7u3eNwUAao0fISweXtFzjaGKMEXa2Gfs0UsE8UhPyQJiIQcUdDQPCEXkmLo3z_PumjExND44r6tE2EC5LjwL5dWl0yVV6uGIE97nD0K7fq10Hg"
+    ],
+    "featured": true,
+    "createdAt": "2026-09-08T21:19:36.320Z"
+  },
+  {
+    "id": "prop-004",
+    "name": "Apartamento 204 · Torre 2",
+    "projectId": "residencial-el-saman",
+    "projectName": "Residencial El Samán",
+    "type": "Apartamento",
+    "location": "Cartago, Vía Zaragoza",
+    "price": 145000000,
+    "status": "Disponible",
+    "area": 48,
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "description": "Apartamento compacto y moderno de 2 habitaciones, ideal para inversión o primera vivienda. Gran iluminación natural y cuota inicial financiada a 18 meses.",
+    "photos": [
+      "https://lh3.googleusercontent.com/aida/AEtjO1Uhw2n63djxQP4w06fDSFzqLjqk8_9pEOl3eZsXRF8jYCWk8931bdfAFmwNxzp--tYzjnuthnuTmy9Eti6bfyGRmFPe9_s-WqSjknUpCQr2NHqLVim11-fEAgtZ8gg7CfZZ7IGOuel6NIXb6SZvfNerFfJNs37EXtlGpRAdf1BasripI4nO2hRmLa_4uQlcjsAwpMXRp6PblfmgkVxRE7SY6uf5O8zgvPJ0vAqOBDdEkDWeN8D-piFegw"
+    ],
+    "featured": false,
+    "createdAt": "2026-09-08T21:19:36.320Z"
+  },
+  {
+    "id": "prop-005",
+    "name": "Lote Campestre Los Samanes N° 8",
+    "projectId": null,
+    "projectName": "Independiente / No asociado",
+    "type": "Lote",
+    "location": "Cartago, Salida a Santa Ana",
+    "price": 135000000,
+    "status": "Disponible",
+    "area": 280,
+    "bedrooms": 0,
+    "bathrooms": 0,
+    "description": "Lote plano campestre con punto de agua y energía disponible, ideal para construcción de casa quinta o vivienda unifamiliar independiente.",
+    "photos": [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBadwx1p3hyaLMMr5Ck9hLFXVxZFxdqoqdp7iTbLn8bDmc_Ji74VEYVZnmCXdn9OzgoFyZMc8Mf_l_T8vIEEEgF96kDMeLjLl5MmjfseY7sJ6CMgiBkvdoXPyhoiY1JiyPHJbLEoQVFZ7oAgHP9ILlohYl4zbIMA4WRY4rHFFhB9_JDSYNGIbCfqT6BbTF-9TRQnBORm_1_5oFQ9IkkzYUqno0fLkz92JyjNgkNE_1-kJRXRGbh79Y"
+    ],
+    "featured": true,
+    "createdAt": "2026-09-08T21:19:36.320Z"
+  }
+]
