@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { PropertyItem, PropertyType, PropertyStatus, Project } from '../types';
+import { apiUrl } from '../api';
 
 interface CrmPropertiesModuleProps {
   properties: PropertyItem[];
@@ -119,7 +120,7 @@ export const CrmPropertiesModule: React.FC<CrmPropertiesModuleProps> = ({
     try {
       if (editingProperty) {
         // UPDATE
-        const res = await fetch(`/api/crm/properties/${editingProperty.id}`, {
+        const res = await fetch(apiUrl(`/api/crm/properties/${editingProperty.id}`), {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -137,7 +138,7 @@ export const CrmPropertiesModule: React.FC<CrmPropertiesModuleProps> = ({
         }
       } else {
         // CREATE
-        const res = await fetch('/api/crm/properties', {
+        const res = await fetch(apiUrl('/api/crm/properties'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -169,7 +170,7 @@ export const CrmPropertiesModule: React.FC<CrmPropertiesModuleProps> = ({
 
     const token = localStorage.getItem('ms_crm_token');
     try {
-      const res = await fetch(`/api/crm/properties/${prop.id}`, {
+      const res = await fetch(apiUrl(`/api/crm/properties/${prop.id}`), {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

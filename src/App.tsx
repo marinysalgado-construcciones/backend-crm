@@ -17,6 +17,7 @@ import { PropertiesSection } from './components/PropertiesSection';
 import { CrmApp } from './crm/CrmApp';
 import { PROJECTS } from './data/projectsData';
 import { Project, PropertyItem, CRMLead } from './types';
+import { apiUrl } from './api';
 
 export default function App() {
   // Independent CRM View Routing (Protected)
@@ -82,9 +83,9 @@ export default function App() {
     const fetchInitialData = async () => {
       try {
         const [leadsRes, projectsRes, propsRes] = await Promise.all([
-          fetch('/api/crm/leads'),
-          fetch('/api/projects'),
-          fetch('/api/properties'),
+          fetch(apiUrl('/api/crm/leads')),
+          fetch(apiUrl('/api/projects')),
+          fetch(apiUrl('/api/properties')),
         ]);
 
         if (leadsRes.ok) {
@@ -164,11 +165,6 @@ export default function App() {
   // Compute active view
   const isCrmActive = viewOverride !== null ? viewOverride === 'crm' : currentView === 'crm';
 
-  // If on CRM route, render independent protected CRM Application
-  if (isCrmActive) {
-    return <CrmApp onBackToLanding={handleBackToLanding} />;
-  }
-
   // Filtered Properties computation for the Dynamic Catalog
   const filteredProperties = useMemo(() => {
     return propertiesList.filter((prop) => {
@@ -216,6 +212,11 @@ export default function App() {
     });
   }, [projectsList, filterZone, filterType, filterBudget]);
 
+    // If on CRM route, render independent protected CRM Application
+  if (isCrmActive) {
+    return <CrmApp onBackToLanding={handleBackToLanding} />;
+  }
+
   const hasActiveFilters =
     filterZone !== 'all' ||
     filterType !== 'all' ||
@@ -250,7 +251,7 @@ export default function App() {
     subsidyStatus?: string;
   }): Promise<boolean> => {
     try {
-      const res = await fetch('/api/crm/lead', {
+      const res = await fetch(apiUrl('/api/crm/lead'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -290,7 +291,7 @@ export default function App() {
     simulation: any;
   }) => {
     try {
-      const res = await fetch('/api/crm/lead', {
+      const res = await fetch(apiUrl('/api/crm/lead'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -339,7 +340,7 @@ export default function App() {
     message: string;
   }) => {
     try {
-      const res = await fetch('/api/crm/lead', {
+      const res = await fetch(apiUrl('/api/crm/lead'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -382,7 +383,7 @@ export default function App() {
     message: string;
   }) => {
     try {
-      const res = await fetch('/api/crm/pqrs', {
+      const res = await fetch(apiUrl('/api/crm/pqrs'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

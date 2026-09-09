@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Project, ProjectStatus, ProjectStage } from '../types';
+import { apiUrl } from '../api';
 
 interface CrmProjectsModuleProps {
   projects: Project[];
@@ -129,7 +130,7 @@ export const CrmProjectsModule: React.FC<CrmProjectsModuleProps> = ({
     try {
       if (editingProject) {
         // UPDATE
-        const res = await fetch(`/api/crm/projects/${editingProject.id}`, {
+        const res = await fetch(apiUrl(`/api/crm/projects/${editingProject.id}`), {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -147,7 +148,7 @@ export const CrmProjectsModule: React.FC<CrmProjectsModuleProps> = ({
         }
       } else {
         // CREATE
-        const res = await fetch('/api/crm/projects', {
+        const res = await fetch(apiUrl('/api/crm/projects'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -179,7 +180,7 @@ export const CrmProjectsModule: React.FC<CrmProjectsModuleProps> = ({
 
     const token = localStorage.getItem('ms_crm_token');
     try {
-      const res = await fetch(`/api/crm/projects/${project.id}`, {
+      const res = await fetch(apiUrl(`/api/crm/projects/${project.id}`), {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

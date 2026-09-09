@@ -15,6 +15,25 @@ const app = express();
 const PORT = Number(process.env.PORT || 3000);
 
 app.use(express.json());
+const allowedOrigin = 'https://mysconstrucciones.co';
+
+app.use((req, res, next) => {
+  const requestOrigin = req.headers.origin;
+
+  if (requestOrigin === allowedOrigin) {
+    res.header('Access-Control-Allow-Origin', allowedOrigin);
+  }
+
+  res.header('Vary', 'Origin');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
 
 // In-memory CRM Leads Store & PQRS Store
 interface CRMLeadNote {

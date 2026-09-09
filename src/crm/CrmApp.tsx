@@ -7,6 +7,7 @@ import { CrmPqrsModule } from './CrmPqrsModule';
 import { CrmGoogleSheetsConfig } from './CrmGoogleSheetsConfig';
 import { CrmProjectsModule } from './CrmProjectsModule';
 import { CrmPropertiesModule } from './CrmPropertiesModule';
+import { apiUrl } from '../api';
 
 interface CrmAppProps {
   onBackToLanding: () => void;
@@ -46,7 +47,7 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
       try {
         const parsed = JSON.parse(userStr);
         // Verify token with backend
-        fetch('/api/crm/auth/verify', {
+        fetch(apiUrl('/api/crm/auth/verify'), {
           headers: { Authorization: `Bearer ${token}` },
         })
           .then((res) => res.json())
@@ -87,11 +88,11 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [leadsRes, pqrsRes, sheetRes, projRes, propRes] = await Promise.all([
-        fetch('/api/crm/leads', { headers }),
-        fetch('/api/crm/pqrs', { headers }),
-        fetch('/api/crm/sheet-config', { headers }),
-        fetch('/api/projects'),
-        fetch('/api/properties'),
+        fetch(apiUrl('/api/crm/leads', { headers })),
+        fetch(apiUrl('/api/crm/pqrs', { headers })),
+        fetch(apiUrl('/api/crm/sheet-config', { headers })),
+        fetch(apiUrl('/api/projects')),
+        fetch(apiUrl('/api/properties')),
       ]);
 
       if (leadsRes.ok) {
@@ -142,7 +143,7 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
   const handleUpdateLeadStatus = async (leadId: string, newStatus: CRMLeadStatus) => {
     const token = localStorage.getItem('ms_crm_token');
     try {
-      const res = await fetch(`/api/crm/lead/${leadId}`, {
+      const res = await fetch(apiUrl(`/api/crm/lead/${leadId}`), {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -166,7 +167,7 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
   const handleAddLeadNote = async (leadId: string, noteText: string): Promise<CRMLeadNote | null> => {
     const token = localStorage.getItem('ms_crm_token');
     try {
-      const res = await fetch(`/api/crm/lead/${leadId}/notes`, {
+      const res = await fetch(apiUrl(`/api/crm/lead/${leadId}/notes`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -201,7 +202,7 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
   const handleRespondPqrs = async (pqrsId: string, officialResponse: string) => {
     const token = localStorage.getItem('ms_crm_token');
     try {
-      const res = await fetch(`/api/crm/pqrs/${pqrsId}/respond`, {
+      const res = await fetch(apiUrl(`/api/crm/pqrs/${pqrsId}/respond`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -235,7 +236,7 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
   const handleSaveWebhookUrl = async (url: string) => {
     const token = localStorage.getItem('ms_crm_token');
     try {
-      const res = await fetch('/api/crm/sheet-config', {
+      const res = await fetch(apiUrl('/api/crm/sheet-config'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -258,7 +259,7 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
   const handleTestWebhook = async (url: string) => {
     const token = localStorage.getItem('ms_crm_token');
     try {
-      const res = await fetch('/api/crm/sync-sheet', {
+      const res = await fetch(apiUrl('/api/crm/sync-sheet'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -322,7 +323,7 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
   const handleSyncAll = async () => {
     const token = localStorage.getItem('ms_crm_token');
     try {
-      const res = await fetch('/api/crm/sync-sheet', {
+      const res = await fetch(apiUrl('/api/crm/sync-sheet'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

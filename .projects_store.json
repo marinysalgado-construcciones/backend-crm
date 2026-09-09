@@ -1,15 +1,15 @@
 [
   {
     "id": "urbanizacion-los-alamos",
-    "name": "Urbanización Los Álamos",
+    "name": "Urbanización Santa Clara",
     "projectType": "VIS",
-    "location": "Cartago, Sector Norte - Valle del Cauca",
-    "zone": "norte",
+    "location": "Cartago, Sector Vía Aereopuerto - Valle del Cauca",
+    "zone": "centro",
     "status": "Preventa",
-    "priceRange": "Desde $195.750.000 COP (135 SMMLV)",
-    "priceCOP": 195750000,
+    "priceRange": "Desde $187.000.000 COP",
+    "priceCOP": 187000000,
     "priceSMMLV": 135,
-    "description": "Urbanización Los Álamos combina armonía natural y arquitectura contemporánea en el Sector Norte de Cartago. Casas unifamiliares diseñadas con amplios espacios, ventilación cruzada e iluminación natural, pensadas para el bienestar familiar aplicando a subsidios VIS.",
+    "description": "Urbanización Santa Clara I, combina armonía natural y arquitectura urbana en el Sector Noroeste de Cartago. Casas unifamiliares diseñadas con 3 alcobas, ventilación cruzada e iluminación natural, pensadas para el bienestar familiar aplicando a subsidios VIS.",
     "shortDescription": "Casas unifamiliares con acabados y diseño sismorresistente en el sector norte de mayor valorización.",
     "constructionStage": "En Obra",
     "heroImage": "https://lh3.googleusercontent.com/aida/AEtjO1WzmJjPEXcy05boPwamPvH-RWmZKkSpQIrpjrSpv6Q4LxVKYDdbK8PsmSECyKZdMmdzlPQh6V9yLAfEc2xGQHGsSe8I0m0UWUmXzxGu3Xl8JvkywVC4T_dAfB5eIjOkLwsyrNM0anNa6fgF3Lrwpyp5jahAzYzgrbqGfbPEn-NQxpWqM12_2hieP00HAIlF70_a7FnayH5LTZQvSg0tK8myZNUm6bQeR2Wz3mLFm2f6FToCFuYZUwCS4w",
@@ -36,7 +36,7 @@
         "description": "Aplica a subsidios concurrentes de vivienda."
       }
     ],
-    "deliveryYear": "2025",
+    "deliveryYear": "2027",
     "createdAt": "2026-09-08T21:19:36.320Z"
   },
   {

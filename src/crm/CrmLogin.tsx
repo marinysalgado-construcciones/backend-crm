@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CRMStaffUser } from '../types';
+import { apiUrl } from '../api';
 
 interface CrmLoginProps {
   onLoginSuccess: (user: CRMStaffUser) => void;
@@ -21,7 +22,7 @@ export const CrmLogin: React.FC<CrmLoginProps> = ({ onLoginSuccess, onBackToLand
     setError(null);
 
     try {
-      const res = await fetch('/api/crm/auth/login', {
+      const res = await fetch(apiUrl('/api/crm/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),

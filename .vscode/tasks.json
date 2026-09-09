@@ -67,6 +67,51 @@
 			],
 			"isBackground": true,
 			"problemMatcher": []
+		},
+		{
+			"label": "Mover retorno CRM después de useMemo",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$p='src/App.tsx'; $s=Get-Content -Raw -LiteralPath $p; $old=@'\\n  // If on CRM route, render independent protected CRM Application\\n  if (isCrmActive) {\\n    return <CrmApp onBackToLanding={handleBackToLanding} />;\\n  }\\n\\n'@; if (-not $s.Contains($old)) { throw 'No se encontró el bloque CRM esperado.' }; $s=$s.Replace($old,'\\n'); $marker='\\n  const hasActiveFilters ='; $insert=@'\\n  // If on CRM route, render independent protected CRM Application\\n  if (isCrmActive) {\\n    return <CrmApp onBackToLanding={handleBackToLanding} />;\\n  }\\n\\n'@; if (-not $s.Contains($marker)) { throw 'No se encontró el punto de inserción.' }; $s=$s.Replace($marker,$insert+$marker); Set-Content -LiteralPath $p -Value $s -Encoding utf8"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Mover retorno CRM después de useMemo",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const fs=require('fs');const p='src/App.tsx';let s=fs.readFileSync(p,'utf8');const start=s.indexOf('  // If on CRM route');const end=s.indexOf('  // Filtered Properties computation',start);if(start<0||end<0)throw new Error('No se encontró el bloque CRM');const block=s.slice(start,end);s=s.slice(0,start)+s.slice(end);const marker='  const hasActiveFilters =';const pos=s.indexOf(marker);if(pos<0)throw new Error('No se encontró el punto de inserción');s=s.slice(0,pos)+block+s.slice(pos);fs.writeFileSync(p,s,'utf8');"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Aplicar corrección de hooks CRM",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const fs=require('fs');const p='src/App.tsx';let s=fs.readFileSync(p,'utf8');const start=s.indexOf('  // If on CRM route');const end=s.indexOf('  // Filtered Properties computation',start);if(start<0||end<0)throw new Error('No se encontró el bloque CRM');const block=s.slice(start,end);s=s.slice(0,start)+s.slice(end);const marker='  const hasActiveFilters =';const pos=s.indexOf(marker);if(pos<0)throw new Error('No se encontró el punto de inserción');s=s.slice(0,pos)+block+s.slice(pos);fs.writeFileSync(p,s,'utf8');"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Aplicar movimiento del retorno CRM",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"node -e \"const fs=require('fs');const p='src/App.tsx';let s=fs.readFileSync(p,'utf8');const start=s.indexOf('  // If on CRM route');const end=s.indexOf('  // Filtered Properties computation',start);if(start<0||end<0)throw new Error('No se encontro el bloque CRM');const block=s.slice(start,end);s=s.slice(0,start)+s.slice(end);const marker='  const hasActiveFilters =';const pos=s.indexOf(marker);if(pos<0)throw new Error('No se encontro el punto de insercion');s=s.slice(0,pos)+block+s.slice(pos);fs.writeFileSync(p,s,'utf8');\""
+			],
+			"isBackground": false,
+			"problemMatcher": []
 		}
 	]
 }

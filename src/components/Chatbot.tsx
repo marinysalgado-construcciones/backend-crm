@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { COMPANY_INFO } from '../data/projectsData';
 import marianaPhoto from '../assets/images/mariana_virtual_advisor_1788563544538.jpg';
+import { apiUrl } from '../api';
 
 interface ChatMessage {
   id: string;
@@ -81,7 +82,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ onRegisterLeadFromChat }) => {
     }
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch(apiUrl('/api/chat'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
