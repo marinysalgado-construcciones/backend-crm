@@ -378,7 +378,7 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
     setPropertiesList((prev) =>
       prev.map((prop) =>
         prop.projectId === projId
-          ? { ...prop, projectId: null, projectName: 'Independiente / No asociado' }
+          ? { ...prop, projectId: null, projectName: 'Independiente' }
           : prop
       )
     );

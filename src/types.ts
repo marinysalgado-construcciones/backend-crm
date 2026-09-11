@@ -45,7 +45,7 @@ export interface Project {
   createdAt?: string;
 }
 
-export type PropertyType = 'Casa' | 'Apartamento' | 'Lote';
+export type PropertyType = 'Casa' | 'Apartamento' | 'Lote' | 'Local' | 'Finca' | 'Oficina' | 'Bodega';
 export type PropertyStatus = 'Disponible' | 'Reservado' | 'Vendido';
 
 export interface PropertyItem {

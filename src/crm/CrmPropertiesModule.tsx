@@ -516,7 +516,7 @@ export const CrmPropertiesModule: React.FC<CrmPropertiesModuleProps> = ({
                     onChange={(e) => setFormProjectId(e.target.value)}
                     className="w-full px-3 py-2 bg-[#F8FAF3] border border-[#D5DCD2] rounded-xl text-xs text-[#1F2421] focus:bg-white focus:border-[#054316] outline-hidden cursor-pointer"
                   >
-                    <option value="">Ninguno / Independiente</option>
+                    <option value="">Independiente</option>
                     {projects.map((proj) => (
                       <option key={proj.id} value={proj.id}>
                         {proj.name} ({proj.projectType || 'VIS'})
@@ -540,6 +540,10 @@ export const CrmPropertiesModule: React.FC<CrmPropertiesModuleProps> = ({
                     <option value="Casa">Casa</option>
                     <option value="Apartamento">Apartamento</option>
                     <option value="Lote">Lote</option>
+                    <option value="Local">Local</option>
+                    <option value="Finca">Finca</option>
+                    <option value="Oficina">Oficina</option>
+                    <option value="Bodega">Bodega</option>
                   </select>
                 </div>
 

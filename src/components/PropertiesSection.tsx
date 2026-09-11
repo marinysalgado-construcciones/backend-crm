@@ -64,8 +64,8 @@ export const PropertiesSection: React.FC<PropertiesSectionProps> = ({
             Catálogo de Propiedades Disponibles
           </h2>
           <p className="text-[#6B6B54] text-sm sm:text-base mt-2 max-w-2xl font-light">
-            Encuentra casas, apartamentos y lotes con acabados de primera calidad, diseñados para
-            brindar durabilidad y confort bioclimático en Cartago.
+            Encuentra casas, apartamentos, lotes, locales, fincas, oficinas y bodegas con acabados de
+            primera calidad, diseñados para brindar durabilidad y confort bioclimático en Cartago.
           </p>
         </div>
 
@@ -103,6 +103,10 @@ export const PropertiesSection: React.FC<PropertiesSectionProps> = ({
             { id: 'Casa', label: 'Casas' },
             { id: 'Apartamento', label: 'Apartamentos' },
             { id: 'Lote', label: 'Lotes' },
+            { id: 'Local', label: 'Locales' },
+            { id: 'Finca', label: 'Fincas' },
+            { id: 'Oficina', label: 'Oficinas' },
+            { id: 'Bodega', label: 'Bodegas' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -237,15 +241,19 @@ export const PropertiesSection: React.FC<PropertiesSectionProps> = ({
                     </div>
 
                     {/* Quick Specs Grid */}
-                    <div className="grid grid-cols-3 gap-2 py-2 px-2.5 bg-[#F8FAF3] rounded-xl border border-[#E5E9E2] text-center">
-                      <div>
-                        <span className="text-xs font-bold text-[#1F2421] block">{prop.bedrooms}</span>
-                        <span className="text-[10px] text-[#707D73]">Habitaciones</span>
-                      </div>
-                      <div className="border-x border-[#E5E9E2]">
-                        <span className="text-xs font-bold text-[#1F2421] block">{prop.bathrooms}</span>
-                        <span className="text-[10px] text-[#707D73]">Baños</span>
-                      </div>
+                    <div className={`grid ${prop.bedrooms > 0 && prop.bathrooms > 0 ? 'grid-cols-3' : prop.bedrooms > 0 || prop.bathrooms > 0 ? 'grid-cols-2' : 'grid-cols-1'} gap-2 py-2 px-2.5 bg-[#F8FAF3] rounded-xl border border-[#E5E9E2] text-center`}>
+                      {prop.bedrooms > 0 && (
+                        <div>
+                          <span className="text-xs font-bold text-[#1F2421] block">{prop.bedrooms}</span>
+                          <span className="text-[10px] text-[#707D73]">Habitaciones</span>
+                        </div>
+                      )}
+                      {prop.bathrooms > 0 && (
+                        <div className={prop.bedrooms > 0 ? 'border-x border-[#E5E9E2]' : ''}>
+                          <span className="text-xs font-bold text-[#1F2421] block">{prop.bathrooms}</span>
+                          <span className="text-[10px] text-[#707D73]">Baños</span>
+                        </div>
+                      )}
                       <div>
                         <span className="text-xs font-bold text-[#1F2421] block">{prop.area} m²</span>
                         <span className="text-[10px] text-[#707D73]">Área Total</span>
@@ -412,19 +420,23 @@ export const PropertiesSection: React.FC<PropertiesSectionProps> = ({
               </div>
 
               {/* Key Features */}
-              <div className="grid grid-cols-3 gap-3 p-3.5 bg-[#F8FAF3] rounded-2xl border border-[#E5E9E2] text-center">
+              <div className={`grid ${selectedProperty.bedrooms > 0 && selectedProperty.bathrooms > 0 ? 'grid-cols-3' : selectedProperty.bedrooms > 0 || selectedProperty.bathrooms > 0 ? 'grid-cols-2' : 'grid-cols-1'} gap-3 p-3.5 bg-[#F8FAF3] rounded-2xl border border-[#E5E9E2] text-center`}>
                 <div>
                   <span className="text-sm font-bold text-[#1F2421] block">{selectedProperty.area} m²</span>
                   <span className="text-xs text-[#707D73]">Área Construida</span>
                 </div>
-                <div className="border-x border-[#E5E9E2]">
-                  <span className="text-sm font-bold text-[#1F2421] block">{selectedProperty.bedrooms}</span>
-                  <span className="text-xs text-[#707D73]">Habitaciones</span>
-                </div>
-                <div>
-                  <span className="text-sm font-bold text-[#1F2421] block">{selectedProperty.bathrooms}</span>
-                  <span className="text-xs text-[#707D73]">Baños</span>
-                </div>
+                {selectedProperty.bedrooms > 0 && (
+                  <div className="border-x border-[#E5E9E2]">
+                    <span className="text-sm font-bold text-[#1F2421] block">{selectedProperty.bedrooms}</span>
+                    <span className="text-xs text-[#707D73]">Habitaciones</span>
+                  </div>
+                )}
+                {selectedProperty.bathrooms > 0 && (
+                  <div>
+                    <span className="text-sm font-bold text-[#1F2421] block">{selectedProperty.bathrooms}</span>
+                    <span className="text-xs text-[#707D73]">Baños</span>
+                  </div>
+                )}
               </div>
 
               {/* Description */}

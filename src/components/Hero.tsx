@@ -106,6 +106,10 @@ export const Hero: React.FC<HeroProps> = ({
                 <option value="casa">Casas en Venta</option>
                 <option value="apartamento">Apartamentos</option>
                 <option value="lote">Lotes / Terrenos</option>
+                <option value="local">Locales Comerciales</option>
+                <option value="finca">Fincas</option>
+                <option value="oficina">Oficinas</option>
+                <option value="bodega">Bodegas</option>
               </select>
             </div>
 

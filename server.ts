@@ -370,7 +370,7 @@ export interface ServerProperty {
   name: string;
   projectId?: string | null;
   projectName?: string;
-  type: 'Casa' | 'Apartamento' | 'Lote';
+  type: 'Casa' | 'Apartamento' | 'Lote' | 'Local' | 'Finca' | 'Oficina' | 'Bodega';
   location: string;
   price: number;
   status: 'Disponible' | 'Reservado' | 'Vendido';
@@ -529,7 +529,7 @@ const SEED_PROPERTIES: ServerProperty[] = [
     id: 'prop-005',
     name: 'Lote Campestre Los Samanes N° 8',
     projectId: null,
-    projectName: 'Independiente / No asociado',
+    projectName: 'Independiente',
     type: 'Lote',
     location: 'Cartago, Salida a Santa Ana',
     price: 135000000,
@@ -820,7 +820,7 @@ app.delete('/api/crm/projects/:id', verifyCrmAuth, (req, res) => {
     activeProperties.forEach((prop) => {
       if (prop.projectId === removed.id) {
         prop.projectId = null;
-        prop.projectName = 'Independiente / No asociado';
+        prop.projectName = 'Independiente';
       }
     });
     savePropertiesStore(activeProperties);
@@ -856,7 +856,7 @@ app.post('/api/crm/properties', verifyCrmAuth, (req, res) => {
       return res.status(400).json({ error: 'Nombre, tipo y precio de la propiedad son obligatorios.' });
     }
 
-    let resolvedProjectName = 'Independiente / No asociado';
+    let resolvedProjectName = 'Independiente';
     if (projectId) {
       const parentProj = activeProjects.find((p) => p.id === projectId);
       if (parentProj) {
@@ -910,7 +910,7 @@ app.put('/api/crm/properties/:id', verifyCrmAuth, (req, res) => {
         const parentProj = activeProjects.find((p) => p.id === req.body.projectId);
         resolvedProjectName = parentProj ? parentProj.name : 'Proyecto Desconocido';
       } else {
-        resolvedProjectName = 'Independiente / No asociado';
+        resolvedProjectName = 'Independiente';
       }
     }
 
