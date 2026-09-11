@@ -15,13 +15,13 @@ const app = express();
 const PORT = Number(process.env.PORT || 3000);
 
 app.use(express.json());
-const allowedOrigin = 'https://mysconstrucciones.co';
+const allowedOrigins = ['https://mysconstrucciones.co', 'https://www.mysconstrucciones.co'];
 
 app.use((req, res, next) => {
   const requestOrigin = req.headers.origin;
 
-  if (requestOrigin === allowedOrigin) {
-    res.header('Access-Control-Allow-Origin', allowedOrigin);
+  if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+    res.header('Access-Control-Allow-Origin', requestOrigin);
   }
 
   res.header('Vary', 'Origin');
@@ -83,7 +83,7 @@ interface PQRSStore {
   syncedToGoogleSheet: boolean;
 }
 
-const crmLeads: CRMLeadStore[] = [
+const SEED_LEADS: CRMLeadStore[] = [
   {
     id: 'lead-001',
     name: 'Andrés Felipe Gómez',
@@ -225,7 +225,7 @@ const crmLeads: CRMLeadStore[] = [
   },
 ];
 
-const pqrsStore: PQRSStore[] = [
+const SEED_PQRS: PQRSStore[] = [
   {
     id: 'pqrs-001',
     radicadoCode: 'PQRS-2025-0142',
@@ -592,8 +592,58 @@ function savePropertiesStore(properties: ServerProperty[]) {
   }
 }
 
+// --- Persistent storage for Leads & PQRS (survive server restarts) ---
+const LEADS_STORE_FILE = path.join(process.cwd(), '.leads_store.json');
+const PQRS_STORE_FILE = path.join(process.cwd(), '.pqrs_store.json');
+
+function loadLeadsStore(): CRMLeadStore[] {
+  try {
+    if (fs.existsSync(LEADS_STORE_FILE)) {
+      const data = JSON.parse(fs.readFileSync(LEADS_STORE_FILE, 'utf8'));
+      if (Array.isArray(data)) {
+        return data;
+      }
+    }
+  } catch (err) {
+    console.error('Error loading leads store, fallback to seed:', err);
+  }
+  return [...SEED_LEADS];
+}
+
+function saveLeadsStore(leads: CRMLeadStore[]) {
+  try {
+    fs.writeFileSync(LEADS_STORE_FILE, JSON.stringify(leads, null, 2), 'utf8');
+  } catch (err) {
+    console.error('Error saving leads store:', err);
+  }
+}
+
+function loadPqrsStore(): PQRSStore[] {
+  try {
+    if (fs.existsSync(PQRS_STORE_FILE)) {
+      const data = JSON.parse(fs.readFileSync(PQRS_STORE_FILE, 'utf8'));
+      if (Array.isArray(data)) {
+        return data;
+      }
+    }
+  } catch (err) {
+    console.error('Error loading pqrs store, fallback to seed:', err);
+  }
+  return [...SEED_PQRS];
+}
+
+function savePqrsStore(pqrs: PQRSStore[]) {
+  try {
+    fs.writeFileSync(PQRS_STORE_FILE, JSON.stringify(pqrs, null, 2), 'utf8');
+  } catch (err) {
+    console.error('Error saving pqrs store:', err);
+  }
+}
+
 let activeProjects: ServerProject[] = loadProjectsStore();
 let activeProperties: ServerProperty[] = loadPropertiesStore();
+let crmLeads: CRMLeadStore[] = loadLeadsStore();
+let pqrsStore: PQRSStore[] = loadPqrsStore();
 
 // --- PUBLIC APIS FOR PROJECTS & PROPERTIES ---
 
@@ -1348,6 +1398,7 @@ app.post('/api/crm/lead', async (req, res) => {
 
     newLead.syncedToGoogleSheet = syncResult.success;
     crmLeads.unshift(newLead);
+    saveLeadsStore(crmLeads);
     return res.json({ success: true, lead: newLead, syncResult });
   } catch (error: any) {
     console.error('Error creating CRM lead:', error);
@@ -1404,6 +1455,7 @@ app.post('/api/crm/pqrs', async (req, res) => {
 
     newPqrs.syncedToGoogleSheet = syncResult.success;
     pqrsStore.unshift(newPqrs);
+    savePqrsStore(pqrsStore);
 
     return res.json({ success: true, pqrs: newPqrs, radicadoCode, syncResult });
   } catch (error: any) {
@@ -1481,6 +1533,7 @@ app.patch('/api/crm/lead/:id', verifyCrmAuth, async (req, res) => {
   }
   if (status || estado) lead.status = (status || estado);
   if (message !== undefined || mensaje !== undefined) lead.message = message !== undefined ? message : mensaje;
+  saveLeadsStore(crmLeads);
 
   // Actualización directa en Google Sheets
   forwardToGoogleSheet('lead', {
@@ -1522,6 +1575,7 @@ app.post('/api/crm/lead/:id/notes', verifyCrmAuth, async (req, res) => {
   };
 
   lead.notes.unshift(newNote);
+  saveLeadsStore(crmLeads);
 
   // Actualización directa de notas en Google Sheets
   forwardToGoogleSheet('lead', {
@@ -1581,6 +1635,7 @@ app.post('/api/crm/pqrs/:id/respond', verifyCrmAuth, async (req, res) => {
   pqrs.status = status || 'Respondida / Cerrada';
   pqrs.respondedAt = new Date().toISOString();
   pqrs.respondedBy = `${user.name} (${user.role})`;
+  savePqrsStore(pqrsStore);
 
   // Forward response update to Google Sheets if configured
   await forwardToGoogleSheet('pqrs', {
@@ -1668,6 +1723,7 @@ app.post('/api/crm/sync-sheet', verifyCrmAuth, async (req, res) => {
         syncedLeadsCount++;
       }
     }
+    saveLeadsStore(crmLeads);
 
     // Sync unsynced PQRS
     for (const item of pqrsStore.filter((p) => !p.syncedToGoogleSheet)) {
@@ -1687,6 +1743,7 @@ app.post('/api/crm/sync-sheet', verifyCrmAuth, async (req, res) => {
         syncedPqrsCount++;
       }
     }
+    savePqrsStore(pqrsStore);
 
     res.json({
       success: true,
