@@ -88,9 +88,9 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [leadsRes, pqrsRes, sheetRes, projRes, propRes] = await Promise.all([
-        fetch(apiUrl('/api/crm/leads', { headers })),
-        fetch(apiUrl('/api/crm/pqrs', { headers })),
-        fetch(apiUrl('/api/crm/sheet-config', { headers })),
+        fetch(apiUrl('/api/crm/leads'), { headers }),
+        fetch(apiUrl('/api/crm/pqrs'), { headers }),
+        fetch(apiUrl('/api/crm/sheet-config'), { headers }),
         fetch(apiUrl('/api/projects')),
         fetch(apiUrl('/api/properties')),
       ]);
