@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Project } from '../types';
 import { formatCOP } from '../utils/calculatorEngine';
 import { COMPANY_INFO } from '../data/projectsData';
@@ -14,12 +14,27 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   onClose,
   onSimulateInCalculator,
 }) => {
+  const [activePlanId, setActivePlanId] = useState<string>('');
+  const [activeImage, setActiveImage] = useState<string>('');
+
+  useEffect(() => {
+    if (project) {
+      setActivePlanId(project.floorPlans?.[0]?.id || '');
+      setActiveImage(project.heroImage || project.photos?.[0] || project.galleryImages?.[0] || '');
+    }
+  }, [project]);
+
   if (!project) return null;
 
-  const [activePlanId, setActivePlanId] = useState<string>(project.floorPlans[0]?.id || '');
-  const [activeImage, setActiveImage] = useState<string>(project.heroImage);
-
-  const activePlan = project.floorPlans.find((p) => p.id === activePlanId) || project.floorPlans[0];
+  const plans = project.floorPlans || [];
+  const activePlan = plans.find((p) => p.id === activePlanId) || plans[0];
+  const heroImage = project.heroImage || project.photos?.[0] || project.galleryImages?.[0] || '';
+  const displayImage = activeImage || heroImage;
+  const galleryImages = (project.photos && project.photos.length > 0
+    ? project.photos
+    : project.galleryImages || []
+  ).filter((img) => img !== heroImage);
+  const features = project.features || [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm overflow-y-auto">
@@ -37,14 +52,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
         {/* Hero Header with Selected Image */}
         <div className="relative h-64 sm:h-80 w-full overflow-hidden bg-[#ecefe7]">
           <img
-            src={activeImage}
+            src={displayImage}
             alt={project.name}
             className="w-full h-full object-cover transition-all duration-300"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-6">
             <div>
               <span className="bg-[#86c33c] text-[#054316] text-xs font-mono font-bold px-2.5 py-0.5 rounded-sm uppercase tracking-wider mb-2 inline-block">
-                {project.stage}
+                {project.constructionStage || project.stage || 'En Obra'}
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-white">{project.name}</h2>
               <p className="text-white/80 text-xs sm:text-sm mt-1 flex items-center gap-1">
@@ -58,14 +73,14 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
         {/* Thumbnail Gallery Strip */}
         <div className="flex gap-2 p-4 bg-[#f8faf3] border-b border-[#c1c9bc]/40 overflow-x-auto">
           <button
-            onClick={() => setActiveImage(project.heroImage)}
+            onClick={() => setActiveImage(heroImage)}
             className={`w-16 h-12 rounded overflow-hidden border-2 shrink-0 ${
-              activeImage === project.heroImage ? 'border-[#054316]' : 'border-transparent opacity-70'
+              displayImage === heroImage ? 'border-[#054316]' : 'border-transparent opacity-70'
             }`}
           >
-            <img src={project.heroImage} alt="Principal" className="w-full h-full object-cover" />
+            <img src={heroImage} alt="Principal" className="w-full h-full object-cover" />
           </button>
-          {project.galleryImages.map((img, idx) => (
+          {galleryImages.map((img, idx) => (
             <button
               key={idx}
               onClick={() => setActiveImage(img)}
@@ -92,7 +107,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
                   Atributos Principales:
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {project.features.map((feat, idx) => (
+                  {features.map((feat, idx) => (
                     <div key={idx} className="p-2.5 bg-[#f2f4ed] rounded border border-[#c1c9bc]/50 text-xs">
                       <div className="flex items-center gap-1.5 font-bold text-[#054316] mb-0.5">
                         <span className="material-symbols-outlined text-[16px] text-[#3f6900]">{feat.icon}</span>
@@ -114,27 +129,33 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
               <ul className="text-xs space-y-2">
                 <li className="flex justify-between border-b border-[#c1c9bc]/30 pb-1">
                   <span className="text-[#41493f]">Tipo de Vivienda</span>
-                  <span className="font-bold text-[#191c18]">{project.typeName}</span>
+                  <span className="font-bold text-[#191c18]">{project.projectType || project.typeName || 'Proyecto VIS'}</span>
                 </li>
                 <li className="flex justify-between border-b border-[#c1c9bc]/30 pb-1">
                   <span className="text-[#41493f]">Área Construida</span>
-                  <span className="font-bold text-[#191c18]">Desde {project.areaMin} m² hasta {project.areaMax} m²</span>
+                  <span className="font-bold text-[#191c18]">
+                    {project.areaMin
+                      ? `Desde ${project.areaMin} m²${project.areaMax ? ` hasta ${project.areaMax} m²` : ''}`
+                      : 'A convenir'}
+                  </span>
                 </li>
                 <li className="flex justify-between border-b border-[#c1c9bc]/30 pb-1">
                   <span className="text-[#41493f]">Habitaciones</span>
-                  <span className="font-bold text-[#191c18]">{project.bedrooms}</span>
+                  <span className="font-bold text-[#191c18]">{project.bedrooms || '3 Habitaciones'}</span>
                 </li>
                 <li className="flex justify-between border-b border-[#c1c9bc]/30 pb-1">
                   <span className="text-[#41493f]">Baños</span>
-                  <span className="font-bold text-[#191c18]">{project.bathrooms}</span>
+                  <span className="font-bold text-[#191c18]">{project.bathrooms || '2 Baños'}</span>
                 </li>
                 <li className="flex justify-between border-b border-[#c1c9bc]/30 pb-1">
                   <span className="text-[#41493f]">Parqueadero</span>
-                  <span className="font-bold text-[#191c18]">{project.parking}</span>
+                  <span className="font-bold text-[#191c18]">{project.parking || 'Privado'}</span>
                 </li>
                 <li className="flex justify-between border-b border-[#c1c9bc]/30 pb-1">
                   <span className="text-[#41493f]">Precio de Referencia</span>
-                  <span className="font-bold text-[#054316]">{formatCOP(project.priceCOP)}</span>
+                  <span className="font-bold text-[#054316]">
+                    {project.priceCOP ? formatCOP(project.priceCOP) : (project.priceRange || 'A convenir')}
+                  </span>
                 </li>
                 <li className="flex justify-between pt-1">
                   <span className="text-[#41493f]">Subsidios Aplican</span>
@@ -145,12 +166,12 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
           </div>
 
           {/* Floor Plans Section within Modal */}
-          {project.floorPlans.length > 0 && (
+          {plans.length > 0 && (
             <div className="border-t border-[#c1c9bc]/50 pt-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
                 <h3 className="text-base font-bold text-[#054316]">Planos y Distribución Arquitectónica</h3>
                 <div className="flex gap-1.5">
-                  {project.floorPlans.map((plan) => (
+                  {plans.map((plan) => (
                     <button
                       key={plan.id}
                       type="button"

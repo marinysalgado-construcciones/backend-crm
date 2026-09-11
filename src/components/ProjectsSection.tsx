@@ -77,7 +77,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute top-4 left-4 bg-[#4A4A30]/90 backdrop-blur-xs text-white text-[11px] font-semibold tracking-wider uppercase px-3.5 py-1 rounded-full shadow-xs">
-                  {project.stage || project.constructionStage || project.status || 'En Obra'}
+                  {project.constructionStage || project.stage || project.status || 'En Obra'}
                 </div>
                 <div className="absolute bottom-4 right-4 bg-[#C1694F] text-white text-xs font-bold px-3 py-1 rounded-full shadow-xs">
                   {project.deliveryYear ? `Entrega ${project.deliveryYear}` : (project.projectType || 'VIS')}
@@ -91,7 +91,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                     {project.name}
                   </h3>
                   <span className="bg-[#F5F5F0] text-[#6B6B54] border border-[#E5E5DF] text-xs font-semibold px-3 py-1 rounded-full">
-                    {project.typeName || project.projectType || 'Proyecto VIS'}
+                    {project.projectType || project.typeName || 'Proyecto VIS'}
                   </span>
                 </div>
 
@@ -110,21 +110,21 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                     <span className="text-[10px] text-[#9E9E8E] uppercase tracking-wider block font-bold">Habitaciones</span>
                     <span className="text-sm font-semibold text-[#4A4A30] flex items-center justify-center gap-1 mt-1">
                       <span className="material-symbols-outlined text-[16px] text-[#5A5A40]">bed</span>
-                      {typeof project.bedrooms === 'string' ? project.bedrooms.split(' ')[0] : (project.bedrooms || '2-3')}
+                      {project.bedrooms ? (typeof project.bedrooms === 'string' ? project.bedrooms.split(' ')[0] : project.bedrooms) : '3'}
                     </span>
                   </div>
                   <div className="text-center border-x border-[#E5E5DF]">
                     <span className="text-[10px] text-[#9E9E8E] uppercase tracking-wider block font-bold">Baños</span>
                     <span className="text-sm font-semibold text-[#4A4A30] flex items-center justify-center gap-1 mt-1">
                       <span className="material-symbols-outlined text-[16px] text-[#5A5A40]">bathtub</span>
-                      {typeof project.bathrooms === 'string' ? project.bathrooms.split(' ')[0] : (project.bathrooms || '1-2')}
+                      {project.bathrooms ? (typeof project.bathrooms === 'string' ? project.bathrooms.split(' ')[0] : project.bathrooms) : '2'}
                     </span>
                   </div>
                   <div className="text-center">
                     <span className="text-[10px] text-[#9E9E8E] uppercase tracking-wider block font-bold">Área</span>
                     <span className="text-sm font-semibold text-[#4A4A30] flex items-center justify-center gap-1 mt-1">
                       <span className="material-symbols-outlined text-[16px] text-[#5A5A40]">square_foot</span>
-                      {project.areaMin || '52'} m²
+                      {project.areaMin ? `${project.areaMin}${project.areaMax ? `-${project.areaMax}` : ''}` : '65'} m²
                     </span>
                   </div>
                 </div>

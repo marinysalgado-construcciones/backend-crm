@@ -112,6 +112,30 @@
 			],
 			"isBackground": false,
 			"problemMatcher": []
+		},
+		{
+			"label": "Verificar Cloudinary y build",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Write-Output '--- cloudinary.ts ---'; Get-Content -LiteralPath 'src/cloudinary.ts'; Write-Output '--- preset refs ---'; Select-String -Path 'src/cloudinary.ts','src/crm/CrmProjectsModule.tsx','src/crm/CrmPropertiesModule.tsx' -Pattern 'om2ul3zx|mys-construcciones|uploadImage|Subir imágenes'; Write-Output '--- dist files ---'; Get-ChildItem -LiteralPath 'dist' -Name"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Inspeccionar configuración de imágenes",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-Content -LiteralPath 'src/cloudinary.ts'; Get-ChildItem -LiteralPath 'dist' -Name"
+			],
+			"isBackground": false,
+			"problemMatcher": []
 		}
 	]
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Project, ProjectStatus, ProjectStage } from '../types';
 import { apiUrl } from '../api';
+import { uploadImage } from '../cloudinary';
 
 interface CrmProjectsModuleProps {
   projects: Project[];
@@ -40,7 +41,13 @@ export const CrmProjectsModule: React.FC<CrmProjectsModuleProps> = ({
   const [formShortDescription, setFormShortDescription] = useState('');
   const [formPhotos, setFormPhotos] = useState<string[]>([]);
   const [newPhotoUrl, setNewPhotoUrl] = useState('');
+  const [uploadingPhotos, setUploadingPhotos] = useState(false);
   const [formDeliveryYear, setFormDeliveryYear] = useState('2025 - 2026');
+  const [formAreaMin, setFormAreaMin] = useState<number>(65);
+  const [formAreaMax, setFormAreaMax] = useState<number>(78);
+  const [formBedrooms, setFormBedrooms] = useState('3 Habitaciones');
+  const [formBathrooms, setFormBathrooms] = useState('2 Baños');
+  const [formParking, setFormParking] = useState('Privado');
 
   const openCreateModal = () => {
     setEditingProject(null);
@@ -55,11 +62,14 @@ export const CrmProjectsModule: React.FC<CrmProjectsModuleProps> = ({
     setFormStage('En Obra');
     setFormDescription('');
     setFormShortDescription('');
-    setFormPhotos([
-      'https://lh3.googleusercontent.com/aida/AEtjO1WzmJjPEXcy05boPwamPvH-RWmZKkSpQIrpjrSpv6Q4LxVKYDdbK8PsmSECyKZdMmdzlPQh6V9yLAfEc2xGQHGsSe8I0m0UWUmXzxGu3Xl8JvkywVC4T_dAfB5eIjOkLwsyrNM0anNa6fgF3Lrwpyp5jahAzYzgrbqGfbPEn-NQxpWqM12_2hieP00HAIlF70_a7FnayH5LTZQvSg0tK8myZNUm6bQeR2Wz3mLFm2f6FToCFuYZUwCS4w',
-    ]);
+    setFormPhotos([]);
     setNewPhotoUrl('');
     setFormDeliveryYear('2025 - 2026');
+    setFormAreaMin(65);
+    setFormAreaMax(78);
+    setFormBedrooms('3 Habitaciones');
+    setFormBathrooms('2 Baños');
+    setFormParking('Privado');
     setIsModalOpen(true);
   };
 
@@ -87,13 +97,70 @@ export const CrmProjectsModule: React.FC<CrmProjectsModuleProps> = ({
     );
     setNewPhotoUrl('');
     setFormDeliveryYear(project.deliveryYear || '2025');
+    setFormAreaMin(project.areaMin || 65);
+    setFormAreaMax(project.areaMax || 78);
+    setFormBedrooms(project.bedrooms || '3 Habitaciones');
+    setFormBathrooms(project.bathrooms || '2 Baños');
+    setFormParking(project.parking || 'Privado');
     setIsModalOpen(true);
   };
 
   const handleAddPhoto = () => {
-    if (!newPhotoUrl.trim()) return;
-    setFormPhotos([...formPhotos, newPhotoUrl.trim()]);
-    setNewPhotoUrl('');
+  if (!newPhotoUrl.trim()) return;
+
+  if (formPhotos.length >= 4) {
+    alert('Este proyecto puede tener máximo 4 fotos.');
+    return;
+  }
+
+  setFormPhotos([...formPhotos, newPhotoUrl.trim()]);
+  setNewPhotoUrl('');
+  };
+
+  const handleUploadPhotos = async (files: FileList | null) => {
+  if (!files || files.length === 0) return;
+
+  const selectedFiles = Array.from(files);
+  const availableSlots = 4 - formPhotos.length;
+
+  if (availableSlots <= 0) {
+    alert('Este proyecto puede tener máximo 4 fotos.');
+    return;
+  }
+
+  if (selectedFiles.length > availableSlots) {
+    alert(`Solo puedes agregar ${availableSlots} foto(s) más.`);
+    return;
+  }
+
+  const validFiles = selectedFiles.filter((file) => {
+    const validType = ['image/jpeg', 'image/png', 'image/webp'].includes(file.type);
+    const validSize = file.size <= 5 * 1024 * 1024;
+
+    if (!validType || !validSize) {
+      alert(`${file.name}: usa JPG, PNG o WEBP de máximo 5 MB.`);
+      return false;
+    }
+
+    return true;
+  });
+
+  try {
+    setUploadingPhotos(true);
+
+    const uploadedUrls = await Promise.all(
+      validFiles.map((file) =>
+        uploadImage(file, 'mys-construcciones/projects')
+      )
+    );
+
+    setFormPhotos((current) => [...current, ...uploadedUrls]);
+  } catch (error) {
+    console.error('Error uploading project photos:', error);
+    alert('No se pudieron subir una o más fotos.');
+  } finally {
+    setUploadingPhotos(false);
+  }
   };
 
   const handleRemovePhoto = (idx: number) => {
@@ -119,6 +186,11 @@ export const CrmProjectsModule: React.FC<CrmProjectsModuleProps> = ({
       priceRange: formPriceRange.trim(),
       priceCOP: formPriceCOP,
       priceSMMLV: formPriceSMMLV,
+      areaMin: formAreaMin,
+      areaMax: formAreaMax,
+      bedrooms: formBedrooms.trim(),
+      bathrooms: formBathrooms.trim(),
+      parking: formParking.trim(),
       constructionStage: formStage,
       description: formDescription.trim(),
       shortDescription: formShortDescription.trim(),
@@ -555,6 +627,74 @@ export const CrmProjectsModule: React.FC<CrmProjectsModuleProps> = ({
                 </div>
               </div>
 
+              {/* Ficha Técnica: Áreas y Composición */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-[#1F2421] mb-1">
+                    Área Mínima (m²)
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="65"
+                    value={formAreaMin}
+                    onChange={(e) => setFormAreaMin(Number(e.target.value))}
+                    className="w-full px-3 py-2 bg-[#F8FAF3] border border-[#D5DCD2] rounded-xl text-xs text-[#1F2421] focus:bg-white focus:border-[#054316] outline-hidden"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#1F2421] mb-1">
+                    Área Máxima (m²)
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="78"
+                    value={formAreaMax}
+                    onChange={(e) => setFormAreaMax(Number(e.target.value))}
+                    className="w-full px-3 py-2 bg-[#F8FAF3] border border-[#D5DCD2] rounded-xl text-xs text-[#1F2421] focus:bg-white focus:border-[#054316] outline-hidden"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#1F2421] mb-1">
+                    Parqueadero
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Privado y Comunal"
+                    value={formParking}
+                    onChange={(e) => setFormParking(e.target.value)}
+                    className="w-full px-3 py-2 bg-[#F8FAF3] border border-[#D5DCD2] rounded-xl text-xs text-[#1F2421] focus:bg-white focus:border-[#054316] outline-hidden"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#1F2421] mb-1">
+                    Habitaciones
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="3 Habitaciones"
+                    value={formBedrooms}
+                    onChange={(e) => setFormBedrooms(e.target.value)}
+                    className="w-full px-3 py-2 bg-[#F8FAF3] border border-[#D5DCD2] rounded-xl text-xs text-[#1F2421] focus:bg-white focus:border-[#054316] outline-hidden"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#1F2421] mb-1">
+                    Baños
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="2 Baños"
+                    value={formBathrooms}
+                    onChange={(e) => setFormBathrooms(e.target.value)}
+                    className="w-full px-3 py-2 bg-[#F8FAF3] border border-[#D5DCD2] rounded-xl text-xs text-[#1F2421] focus:bg-white focus:border-[#054316] outline-hidden"
+                  />
+                </div>
+              </div>
+
               {/* Descripción */}
               <div>
                 <label className="block text-xs font-bold text-[#1F2421] mb-1">
@@ -589,6 +729,27 @@ export const CrmProjectsModule: React.FC<CrmProjectsModuleProps> = ({
                   >
                     Añadir Foto
                   </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                 <label className="bg-[#EAF2E6] hover:bg-[#DCEBD5] text-[#054316] px-3 py-2 rounded-xl text-xs font-bold cursor-pointer">
+                   {uploadingPhotos ? 'Subiendo...' : 'Subir imágenes'}
+                   <input
+                     type="file"
+                     accept="image/jpeg,image/png,image/webp"
+                     multiple
+                     disabled={uploadingPhotos || formPhotos.length >= 4}
+                     onChange={(e) => {
+                       handleUploadPhotos(e.target.files);
+                       e.currentTarget.value = '';
+                     }}
+                     className="hidden"
+                   />
+                 </label>
+
+                 <span className="text-[11px] text-[#6B786E]">
+                   {formPhotos.length}/4 fotos
+                 </span>
                 </div>
 
                 {/* Previews */}

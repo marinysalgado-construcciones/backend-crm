@@ -350,6 +350,11 @@ export interface ServerProject {
   priceRange: string;
   priceCOP?: number;
   priceSMMLV?: number;
+  areaMin?: number; // m² construidos mínimos
+  areaMax?: number; // m² construidos máximos
+  bedrooms?: string; // ej. '3 Habitaciones'
+  bathrooms?: string; // ej. '2 Baños'
+  parking?: string; // ej. 'Privado y Comunal'
   description: string;
   shortDescription?: string;
   constructionStage: 'En Preventa' | 'En Obra' | 'En Acabados' | 'Para Entregar';
@@ -703,6 +708,11 @@ app.post('/api/crm/projects', verifyCrmAuth, (req, res) => {
       priceRange,
       priceCOP,
       priceSMMLV,
+      areaMin,
+      areaMax,
+      bedrooms,
+      bathrooms,
+      parking,
       description,
       shortDescription,
       constructionStage,
@@ -728,6 +738,11 @@ app.post('/api/crm/projects', verifyCrmAuth, (req, res) => {
       priceRange: priceRange || 'A convenir',
       priceCOP: priceCOP ? Number(priceCOP) : undefined,
       priceSMMLV: priceSMMLV ? Number(priceSMMLV) : undefined,
+      areaMin: areaMin ? Number(areaMin) : undefined,
+      areaMax: areaMax ? Number(areaMax) : undefined,
+      bedrooms: bedrooms || '',
+      bathrooms: bathrooms || '',
+      parking: parking || '',
       description: description || '',
       shortDescription: shortDescription || '',
       constructionStage: constructionStage || 'En Preventa',

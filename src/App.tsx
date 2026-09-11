@@ -199,14 +199,19 @@ export default function App() {
   // Filtered Projects computation
   const filteredProjects = useMemo(() => {
     return projectsList.filter((proj) => {
-      if (filterZone === 'norte' && !proj.location.toLowerCase().includes('norte')) return false;
-      if (filterZone === 'zaragoza' && !proj.location.toLowerCase().includes('zaragoza')) return false;
+      // Zone filter: usa el campo 'zone' del CRM y también valida el texto de location
+      if (filterZone === 'norte' && proj.zone !== 'norte' && !proj.location.toLowerCase().includes('norte')) return false;
+      if (filterZone === 'zaragoza' && proj.zone !== 'zaragoza' && !proj.location.toLowerCase().includes('zaragoza')) return false;
 
-      if (filterType === 'casa' && proj.type !== 'casa') return false;
-      if (filterType === 'apartamento' && proj.type !== 'apartamento') return false;
+      // Type filter: solo excluye proyectos legacy con 'type' definido;
+      // los proyectos del CRM (sin 'type') siempre se muestran
+      if (filterType === 'casa' && proj.type !== undefined && proj.type !== 'casa') return false;
+      if (filterType === 'apartamento' && proj.type !== undefined && proj.type !== 'apartamento') return false;
 
-      if (filterBudget === 'hasta135' && proj.priceSMMLV && proj.priceSMMLV > 135) return false;
-      if (filterBudget === 'mas135' && proj.priceSMMLV && proj.priceSMMLV < 135) return false;
+      // Budget filter: usa priceCOP del CRM (valores reales del Hero)
+      if (filterBudget === 'hasta180' && proj.priceCOP && proj.priceCOP > 180000000) return false;
+      if (filterBudget === 'hasta250' && proj.priceCOP && proj.priceCOP > 250000000) return false;
+      if (filterBudget === 'mas250' && proj.priceCOP && proj.priceCOP <= 250000000) return false;
 
       return true;
     });
