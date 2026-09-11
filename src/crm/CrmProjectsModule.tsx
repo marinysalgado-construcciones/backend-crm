@@ -698,13 +698,27 @@ export const CrmProjectsModule: React.FC<CrmProjectsModuleProps> = ({
               {/* Descripción */}
               <div>
                 <label className="block text-xs font-bold text-[#1F2421] mb-1">
-                  Descripción Detallada
+                  Descripción Detallada (aparece en la Ficha Completa del sitio web)
                 </label>
                 <textarea
                   rows={3}
                   placeholder="Detalles de arquitectura, amenidades, subsidios aplicables..."
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#F8FAF3] border border-[#D5DCD2] rounded-xl text-xs text-[#1F2421] focus:bg-white focus:border-[#054316] outline-hidden resize-none"
+                />
+              </div>
+
+              {/* Descripción Corta */}
+              <div>
+                <label className="block text-xs font-bold text-[#1F2421] mb-1">
+                  Descripción Corta (aparece en la tarjeta del sitio web)
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Resumen breve para la tarjeta. Si la dejas VACÍA, se mostrará tu Descripción Detallada."
+                  value={formShortDescription}
+                  onChange={(e) => setFormShortDescription(e.target.value)}
                   className="w-full px-3 py-2 bg-[#F8FAF3] border border-[#D5DCD2] rounded-xl text-xs text-[#1F2421] focus:bg-white focus:border-[#054316] outline-hidden resize-none"
                 />
               </div>
