@@ -299,6 +299,10 @@ function saveSheetConfig(url: string) {
 
 let activeGoogleSheetWebhookUrl = process.env.GOOGLE_SHEET_WEBHOOK_URL || loadSavedSheetConfig() || '';
 
+// Clave secreta compartida con el Apps Script v2.1 para EXPORTAR datos de la hoja al panel.
+// Debe ser idéntica a la variable CLAVE_EXPORTACION del script de Google.
+const EXPORT_SECRET = process.env.EXPORT_SECRET || 'MYS-CRM-EXPORT-2025';
+
 // Staff credentials table
 const STAFF_ACCOUNTS = [
   {
@@ -1768,6 +1772,144 @@ app.get('/api/crm/sheet-config', verifyCrmAuth, (req, res) => {
     totalPqrs: pqrsStore.length,
     syncedPqrs: pqrsStore.filter((p) => p.syncedToGoogleSheet).length,
   });
+});
+
+// 14. PROTECTED: IMPORTAR todos los datos desde Google Sheet al Panel CRM
+// Trae los registros históricos de las pestañas Prospectos_Leads y PQRS_Ciudadano
+// para que aparezcan en el Panel de Control Central (métricas y módulos).
+app.post('/api/crm/import-sheet', verifyCrmAuth, async (req, res) => {
+  try {
+    const targetUrl = (req.body.webhookUrl || activeGoogleSheetWebhookUrl || '').trim();
+    if (!targetUrl) {
+      return res.status(400).json({ error: 'Primero configura la URL del Webhook de Google Sheets.' });
+    }
+
+    // Pedir todos los datos a la hoja (el Apps Script v2.1 los devuelve con la clave)
+    const exportUrl = `${targetUrl}?action=export&key=${encodeURIComponent(EXPORT_SECRET)}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 25000);
+    const sheetRes = await fetch(exportUrl, { method: 'GET', signal: controller.signal, redirect: 'follow' });
+    clearTimeout(timeout);
+
+    const rawText = await sheetRes.text();
+    let data: any;
+    try {
+      data = JSON.parse(rawText);
+    } catch (parseErr) {
+      return res.status(502).json({
+        error: 'La hoja de Google no devolvió datos válidos. Verifica que el Apps Script sea la versión 2.1 (con exportación) y que el acceso sea "Cualquier usuario".',
+      });
+    }
+
+    if (data.status !== 'success') {
+      return res.status(502).json({ error: data.mensaje || 'Error al leer la hoja de Google.' });
+    }
+
+    let importedLeads = 0;
+    let importedPqrs = 0;
+    let skippedLeads = 0;
+    let skippedPqrs = 0;
+
+    // --- Importar Leads (pestaña Prospectos_Leads) ---
+    const sheetLeads: any[] = Array.isArray(data.leads) ? data.leads : [];
+    for (const row of sheetLeads) {
+      const leadId = String(row['ID Prospecto'] || '').trim();
+      const leadName = String(row['Nombre Completo'] || '').trim();
+      if (!leadId || !leadName) { skippedLeads++; continue; }
+
+      // Evitar duplicados: si ya existe en el panel, no lo vuelve a traer
+      if (crmLeads.some((l) => l.id === leadId)) { skippedLeads++; continue; }
+
+      const fecha = row['Fecha / Hora'];
+      const createdAt = fecha instanceof Date ? fecha.toISOString() : new Date().toISOString();
+
+      const precio = String(row['Precio Vivienda COP'] || '').replace(/[^\d]/g, '');
+      const subsidio = String(row['Subsidio Total COP'] || '').replace(/[^\d]/g, '');
+      const credito = String(row['Monto Crédito COP'] || '').replace(/[^\d]/g, '');
+      const cuota = String(row['Cuota Mensual Est.'] || '').replace(/[^\d]/g, '');
+      const plazo = parseInt(String(row['Plazo (Años)'] || '0'), 10) || undefined;
+
+      const importedLead: CRMLeadStore = {
+        id: leadId,
+        name: leadName,
+        email: String(row['Correo Electrónico'] || '').trim(),
+        phone: String(row['Teléfono / WhatsApp'] || '').trim(),
+        project: String(row['Proyecto de Interés'] || 'Consulta General').trim(),
+        subsidyStatus: String(row['Estado Sisbén / Subsidio'] || 'En validación / Requiere asesoría').trim(),
+        source: 'formulario',
+        status: 'Nuevo',
+        message: String(row['Mensaje o Consulta'] || '').trim() || undefined,
+        calculatorDetails: (precio || subsidio || credito || cuota)
+          ? {
+              totalHousePrice: Number(precio) || 0,
+              totalSubsidies: Number(subsidio) || 0,
+              loanAmount: Number(credito) || 0,
+              monthlyPayment: Number(cuota) || 0,
+              termYears: plazo || 0,
+            }
+          : undefined,
+        createdAt,
+        syncedToGoogleSheet: true, // Ya está en la hoja, no reenviar
+        notes: [],
+      };
+      crmLeads.push(importedLead);
+      importedLeads++;
+    }
+
+    // --- Importar PQRS (pestaña PQRS_Ciudadano) ---
+    const sheetPqrs: any[] = Array.isArray(data.pqrs) ? data.pqrs : [];
+    for (const row of sheetPqrs) {
+      const radicado = String(row['N° Radicado'] || '').trim();
+      const nombre = String(row['Nombre del Ciudadano'] || '').trim();
+      if (!radicado || !nombre) { skippedPqrs++; continue; }
+
+      // Evitar duplicados por número de radicado
+      if (pqrsStore.some((p) => p.radicadoCode === radicado)) { skippedPqrs++; continue; }
+
+      const fecha = row['Fecha / Hora'];
+      const createdAt = fecha instanceof Date ? fecha.toISOString() : new Date().toISOString();
+      const tipoRaw = String(row['Tipo de PQRS'] || 'Petición').trim();
+      const tipoValido = (['Petición', 'Queja', 'Reclamo', 'Sugerencia'] as const).includes(tipoRaw as any)
+        ? (tipoRaw as PQRSStore['type'])
+        : 'Petición';
+
+      const nuevoPqrs: PQRSStore = {
+        id: `pqrs-imported-${radicado}`,
+        radicadoCode: radicado,
+        type: tipoValido,
+        name: nombre,
+        phone: String(row['Teléfono / Celular'] || '').trim(),
+        email: String(row['Correo Electrónico'] || '').trim(),
+        project: String(row['Proyecto Relacionado'] || 'Administración General').trim(),
+        message: String(row['Descripción del Requerimiento'] || '').trim(),
+        status: 'Pendiente',
+        createdAt,
+        legalDeadlineDays: parseInt(String(row['Días Término Legal'] || '15'), 10) || 15,
+        officialResponse: String(row['Respuesta Oficial'] || '').trim() || undefined,
+        syncedToGoogleSheet: true, // Ya está en la hoja, no reenviar
+      };
+      pqrsStore.push(nuevoPqrs);
+      importedPqrs++;
+    }
+
+    // Ordenar del más reciente al más antiguo y guardar en archivo
+    crmLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    pqrsStore.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    saveLeadsStore(crmLeads);
+    savePqrsStore(pqrsStore);
+
+    res.json({
+      success: true,
+      importedLeads,
+      importedPqrs,
+      skippedLeads,
+      skippedPqrs,
+      message: `Importación completada: ${importedLeads} prospecto(s) y ${importedPqrs} PQRS traídos desde Google Sheet. ${skippedLeads + skippedPqrs > 0 ? `(${skippedLeads + skippedPqrs} ya existían o estaban incompletos)` : ''}`,
+    });
+  } catch (error: any) {
+    console.error('Error in /api/crm/import-sheet:', error);
+    res.status(500).json({ error: 'Error al importar desde Google Sheet: ' + (error?.message || 'desconocido') });
+  }
 });
 
 app.post('/api/crm/sheet-config', verifyCrmAuth, (req, res) => {

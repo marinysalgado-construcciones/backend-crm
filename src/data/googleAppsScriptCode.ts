@@ -270,17 +270,86 @@ function doPost(e) {
   }
 }
 
+// ============================================================
+// NUEVO v2.1: CLAVE DE SEGURIDAD PARA EXPORTAR DATOS AL PANEL CRM
+// (Evita que extraños puedan leer los prospectos de la hoja)
+// ============================================================
+var CLAVE_EXPORTACION = 'MYS-CRM-EXPORT-2025';
+
+// ============================================================
+// NUEVO v2.1: EXPORTAR TODOS LOS DATOS (Lectura para el Panel CRM)
+// El panel llama a esta función con "Importar desde Google Sheet"
+// ============================================================
+function exportarDatos(params) {
+  try {
+    if (String(params.key || params.clave || '') !== CLAVE_EXPORTACION) {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: 'error',
+        mensaje: 'Clave de exportación inválida. Copia el código Apps Script actualizado desde el CRM.'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var resultado = { status: 'success', leads: [], pqrs: [] };
+
+    // Exportar pestaña Prospectos_Leads
+    var hojaLeads = ss.getSheetByName('Prospectos_Leads');
+    if (hojaLeads && hojaLeads.getLastRow() > 1) {
+      var valoresLeads = hojaLeads.getDataRange().getValues();
+      var encabezadosLeads = valoresLeads[0];
+      for (var i = 1; i < valoresLeads.length; i++) {
+        if (!valoresLeads[i][1]) continue; // Filas sin ID Prospecto
+        var filaLead = {};
+        for (var c = 0; c < encabezadosLeads.length; c++) {
+          filaLead[String(encabezadosLeads[c])] = valoresLeads[i][c];
+        }
+        resultado.leads.push(filaLead);
+      }
+    }
+
+    // Exportar pestaña PQRS_Ciudadano
+    var hojaPqrs = ss.getSheetByName('PQRS_Ciudadano');
+    if (hojaPqrs && hojaPqrs.getLastRow() > 1) {
+      var valoresPqrs = hojaPqrs.getDataRange().getValues();
+      var encabezadosPqrs = valoresPqrs[0];
+      for (var j = 1; j < valoresPqrs.length; j++) {
+        if (!valoresPqrs[j][1]) continue; // Filas sin N° Radicado
+        var filaPqrs = {};
+        for (var k = 0; k < encabezadosPqrs.length; k++) {
+          filaPqrs[String(encabezadosPqrs[k])] = valoresPqrs[j][k];
+        }
+        resultado.pqrs.push(filaPqrs);
+      }
+    }
+
+    return ContentService.createTextOutput(JSON.stringify(resultado)).setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error',
+      mensaje: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
 function doGet(e) {
+  var params = (e && e.parameter) || {};
+
+  // NUEVO v2.1: Exportar datos para el Panel CRM (se verifica ANTES de todo)
+  if (params.action === 'export' || params.accion === 'exportar') {
+    return exportarDatos(params);
+  }
+
   // Si se envían parámetros por GET (ej. pruebas rápidas o webhooks simples)
-  if (e && e.parameter && (e.parameter.nombre || e.parameter.name || e.parameter.radicado || e.parameter.action)) {
+  if (e && e.parameter && (e.parameter.nombre || e.parameter.name || e.parameter.radicado)) {
     return doPost(e);
   }
 
   return ContentService.createTextOutput(JSON.stringify({
     status: 'online',
     servicio: 'CRM Marín & Salgado Construcciones S.A.S.',
-    version: '2.0.0-direct-write',
+    version: '2.1.0-direct-write-import',
     escrituraDirecta: 'activa (SpreadsheetApp.flush habilitado)',
+    exportacionPanel: 'activa (action=export con clave de seguridad)',
     canalesSoportados: [
       'Formulario Web de Contacto',
       'Calculadora Financiera VIS',

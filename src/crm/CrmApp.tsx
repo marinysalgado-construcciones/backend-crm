@@ -353,6 +353,40 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
     }
   };
 
+  // Import all historical records from Google Sheet into the CRM panel
+  const handleImportFromSheet = async () => {
+    const token = localStorage.getItem('ms_crm_token');
+    try {
+      const res = await fetch(apiUrl('/api/crm/import-sheet'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ webhookUrl: googleSheetWebhookUrl }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        await loadCrmData();
+        return {
+          success: true,
+          message: data.message || 'Importación completada.',
+        };
+      } else {
+        return {
+          success: false,
+          message: data.error || 'Error al importar desde Google Sheet.',
+        };
+      }
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err?.message || 'No se pudo conectar con el servidor para importar la hoja.',
+      };
+    }
+  };
+
   // Handlers for Projects CRUD
   const handleProjectCreated = (newProj: Project) => {
     setProjectsList((prev) => [newProj, ...prev]);
@@ -710,6 +744,7 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
                 onSaveWebhookUrl={handleSaveWebhookUrl}
                 onTestWebhook={handleTestWebhook}
                 onSyncAll={handleSyncAll}
+                onImportFromSheet={handleImportFromSheet}
                 totalLeads={leads.length}
                 syncedLeads={leads.filter((l) => l.syncedToGoogleSheet).length}
                 totalPqrs={pqrsList.length}

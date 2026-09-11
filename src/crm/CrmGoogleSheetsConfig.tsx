@@ -6,6 +6,7 @@ interface CrmGoogleSheetsConfigProps {
   onSaveWebhookUrl: (url: string) => Promise<boolean>;
   onTestWebhook: (url: string) => Promise<{ success: boolean; message: string }>;
   onSyncAll: () => Promise<{ success: boolean; message: string }>;
+  onImportFromSheet: () => Promise<{ success: boolean; message: string }>;
   totalLeads: number;
   syncedLeads: number;
   totalPqrs: number;
@@ -17,6 +18,7 @@ export const CrmGoogleSheetsConfig: React.FC<CrmGoogleSheetsConfigProps> = ({
   onSaveWebhookUrl,
   onTestWebhook,
   onSyncAll,
+  onImportFromSheet,
   totalLeads,
   syncedLeads,
   totalPqrs,
@@ -26,6 +28,7 @@ export const CrmGoogleSheetsConfig: React.FC<CrmGoogleSheetsConfigProps> = ({
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(
     null
   );
@@ -108,6 +111,20 @@ export const CrmGoogleSheetsConfig: React.FC<CrmGoogleSheetsConfigProps> = ({
     }
   };
 
+  const handleImportFromSheet = async () => {
+    setImporting(true);
+    setFeedback(null);
+    try {
+      const res = await onImportFromSheet();
+      setFeedback({
+        type: res.success ? 'success' : 'error',
+        message: res.message,
+      });
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const handleCopyCode = () => {
     navigator.clipboard.writeText(GOOGLE_APPS_SCRIPT_CODE);
     setCopiedCode(true);
@@ -156,7 +173,7 @@ export const CrmGoogleSheetsConfig: React.FC<CrmGoogleSheetsConfigProps> = ({
         </div>
 
         {/* Sync Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-[#F0EFEB]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-[#F0EFEB]">
           <div className="p-4 bg-[#FDFCF8] rounded-2xl border border-[#E5E5DF] text-xs">
             <span className="text-[#6B6B54] block font-semibold uppercase text-[10px]">
               Prospectos (Leads) Sincronizados
@@ -204,6 +221,30 @@ export const CrmGoogleSheetsConfig: React.FC<CrmGoogleSheetsConfigProps> = ({
             >
               <span className="material-symbols-outlined text-[16px]">sync</span>
               <span>{syncing ? 'Sincronizando...' : 'Sincronizar Todo Ahora'}</span>
+            </button>
+          </div>
+
+          {/* Import from Google Sheet Card */}
+          <div className="p-4 bg-[#FDFCF8] rounded-2xl border border-[#86c33c]/60 text-xs flex flex-col justify-between">
+            <div>
+              <span className="text-[#054316] block font-bold uppercase text-[10px]">
+                Importar desde Google Sheet
+              </span>
+              <p className="text-[11px] text-[#41493F] mt-1">
+                Trae al panel todos los registros históricos guardados en la hoja (prospectos y PQRS). Úsalo si el
+                panel quedó vacío tras una actualización del servidor.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleImportFromSheet}
+              disabled={importing || !isConfigured}
+              className="mt-2 w-full py-2 bg-[#86c33c] hover:bg-[#97d64d] text-[#132A13] font-bold text-xs rounded-xl shadow transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
+            >
+              <span className={`material-symbols-outlined text-[16px] ${importing ? 'animate-spin' : ''}`}>
+                {importing ? 'progress_activity' : 'download'}
+              </span>
+              <span>{importing ? 'Importando...' : 'Importar Registros de la Hoja'}</span>
             </button>
           </div>
         </div>
