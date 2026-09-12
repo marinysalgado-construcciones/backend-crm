@@ -297,7 +297,7 @@ export const PropertiesSection: React.FC<PropertiesSectionProps> = ({
       {/* Property Detail Modal */}
       {selectedProperty && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-[#D5DCD2] my-8 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-[#D5DCD2] my-auto animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="relative bg-[#1F2421] text-white p-5 flex items-start justify-between">
               <div>
@@ -449,16 +449,72 @@ export const PropertiesSection: React.FC<PropertiesSectionProps> = ({
                 </p>
               </div>
 
-              {/* Subsidies & Benefits callout */}
-              <div className="p-4 bg-[#EAEFE8] rounded-2xl border border-[#D5DCD2] flex items-start gap-3">
-                <span className="material-symbols-outlined text-[#054316] text-xl shrink-0 mt-0.5">
-                  verified
-                </span>
-                <div className="text-xs text-[#2F3E32]">
-                  <strong className="block text-[#054316] font-bold mb-0.5">
-                    Asesoría de Subsidios y Financiación Disponible
-                  </strong>
-                  Te acompañamos en la postulación a subsidios de vivienda (Mi Casa Ya, Cajas de Compensación Familiar) y crédito hipotecario con entidades bancarias aliadas.
+              {/* Main Attributes of the Property */}
+              <div>
+                <h4 className="text-xs font-bold text-[#1F2421] uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px] text-[#054316]">fact_check</span>
+                  Atributos Principales del Inmueble
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div className="flex items-center gap-2.5 bg-[#F8FAF3] border border-[#E5E9E2] rounded-xl px-3.5 py-2.5">
+                    <span className="material-symbols-outlined text-[20px] text-[#054316]">home_work</span>
+                    <div className="min-w-0">
+                      <span className="block text-[10px] uppercase tracking-wider text-[#707D73] font-semibold">Tipo de Inmueble</span>
+                      <span className="block text-xs font-bold text-[#1F2421]">{selectedProperty.type}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 bg-[#F8FAF3] border border-[#E5E9E2] rounded-xl px-3.5 py-2.5">
+                    <span className="material-symbols-outlined text-[20px] text-[#054316]">sell</span>
+                    <div className="min-w-0">
+                      <span className="block text-[10px] uppercase tracking-wider text-[#707D73] font-semibold">Estado Comercial</span>
+                      <span className="block text-xs font-bold text-[#1F2421]">{selectedProperty.status}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 bg-[#F8FAF3] border border-[#E5E9E2] rounded-xl px-3.5 py-2.5">
+                    <span className="material-symbols-outlined text-[20px] text-[#054316]">domain</span>
+                    <div className="min-w-0">
+                      <span className="block text-[10px] uppercase tracking-wider text-[#707D73] font-semibold">Proyecto Asociado</span>
+                      <span className="block text-xs font-bold text-[#1F2421] truncate">{selectedProperty.projectName || 'Independiente'}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 bg-[#F8FAF3] border border-[#E5E9E2] rounded-xl px-3.5 py-2.5">
+                    <span className="material-symbols-outlined text-[20px] text-[#054316]">location_on</span>
+                    <div className="min-w-0">
+                      <span className="block text-[10px] uppercase tracking-wider text-[#707D73] font-semibold">Ubicación</span>
+                      <span className="block text-xs font-bold text-[#1F2421] truncate">{selectedProperty.location}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 bg-[#F8FAF3] border border-[#E5E9E2] rounded-xl px-3.5 py-2.5">
+                    <span className="material-symbols-outlined text-[20px] text-[#054316]">square_foot</span>
+                    <div className="min-w-0">
+                      <span className="block text-[10px] uppercase tracking-wider text-[#707D73] font-semibold">Área Total</span>
+                      <span className="block text-xs font-bold text-[#1F2421]">{selectedProperty.area.toLocaleString('es-CO')} m²</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 bg-[#F8FAF3] border border-[#E5E9E2] rounded-xl px-3.5 py-2.5">
+                    <span className="material-symbols-outlined text-[20px] text-[#054316]">bed</span>
+                    <div className="min-w-0">
+                      <span className="block text-[10px] uppercase tracking-wider text-[#707D73] font-semibold">Habitaciones</span>
+                      <span className="block text-xs font-bold text-[#1F2421]">
+                        {selectedProperty.bedrooms > 0 ? selectedProperty.bedrooms : 'No aplica'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 bg-[#F8FAF3] border border-[#E5E9E2] rounded-xl px-3.5 py-2.5 sm:col-span-2">
+                    <span className="material-symbols-outlined text-[20px] text-[#054316]">bathtub</span>
+                    <div className="min-w-0">
+                      <span className="block text-[10px] uppercase tracking-wider text-[#707D73] font-semibold">Baños</span>
+                      <span className="block text-xs font-bold text-[#1F2421]">
+                        {selectedProperty.bathrooms > 0 ? selectedProperty.bathrooms : 'No aplica'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
