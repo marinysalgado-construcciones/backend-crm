@@ -307,8 +307,8 @@ const EXPORT_SECRET = process.env.EXPORT_SECRET || 'MYS-CRM-EXPORT-2025';
 const STAFF_ACCOUNTS = [
   {
     id: 'staff-1',
-    username: 'admin@marinysalgado.com',
-    password: 'MarinySalgado2025*',
+    username: 'marinysalgado',
+    password: 'M&S2026*',
     name: 'Carolina Salgado',
     role: 'Gerente de Proyectos & Fundadora',
     token: 'token-ms-admin-carolina-2025',
@@ -1774,6 +1774,40 @@ app.get('/api/crm/sheet-config', verifyCrmAuth, (req, res) => {
   });
 });
 
+// --- Utilidades para importar datos desde Google Sheet ---
+
+// Convierte la fecha guardada en la hoja ("yyyy-MM-dd HH:mm:ss" en hora Colombia, o ISO)
+// a formato ISO UTC. Devuelve null si no se puede interpretar.
+function parseSheetDate(value: any): string | null {
+  if (!value) return null;
+  if (value instanceof Date) return value.toISOString();
+  const raw = String(value).trim();
+  if (!raw) return null;
+  // Formato escrito por el Apps Script: "2025-09-13 15:30:22" (hora de Colombia, UTC-5)
+  const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/);
+  if (match) {
+    const d = new Date(`${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}-05:00`);
+    if (!isNaN(d.getTime())) return d.toISOString();
+  }
+  // Otros formatos (ISO, fecha de celda serializada por Google, etc.)
+  const fallback = new Date(raw);
+  return isNaN(fallback.getTime()) ? null : fallback.toISOString();
+}
+
+// Mapea la etiqueta "Canal de Origen" de la hoja al valor interno del CRM
+function mapSheetCanalToSource(canal: any): CRMLeadStore['source'] {
+  const c = String(canal || '').toLowerCase();
+  if (c.includes('calc')) return 'calculadora';
+  if (c.includes('chat')) return 'chatbot';
+  if (c.includes('pqrs')) return 'pqrs';
+  return 'formulario';
+}
+
+const VALID_LEAD_STATUSES: CRMLeadStore['status'][] = [
+  'Nuevo', 'Contactado', 'Cita Agendada', 'En trámite de crédito', 'Venta Cerrada', 'Descartado',
+];
+const VALID_PQRS_STATUSES: PQRSStore['status'][] = ['Pendiente', 'En trámite', 'Respondida / Cerrada'];
+
 // 14. PROTECTED: IMPORTAR todos los datos desde Google Sheet al Panel CRM
 // Trae los registros históricos de las pestañas Prospectos_Leads y PQRS_Ciudadano
 // para que aparezcan en el Panel de Control Central (métricas y módulos).
@@ -1820,8 +1854,15 @@ app.post('/api/crm/import-sheet', verifyCrmAuth, async (req, res) => {
       // Evitar duplicados: si ya existe en el panel, no lo vuelve a traer
       if (crmLeads.some((l) => l.id === leadId)) { skippedLeads++; continue; }
 
-      const fecha = row['Fecha / Hora'];
-      const createdAt = fecha instanceof Date ? fecha.toISOString() : new Date().toISOString();
+      // Fecha real guardada en la hoja (hora de Colombia); si no existe, usa ahora
+      const createdAt = parseSheetDate(row['Fecha / Hora']) || new Date().toISOString();
+
+      // Estado comercial real de la hoja (solo si es un valor válido del CRM)
+      const estadoHoja = String(row['Estado CRM'] || '').trim() as CRMLeadStore['status'];
+      const status = VALID_LEAD_STATUSES.includes(estadoHoja) ? estadoHoja : 'Nuevo';
+
+      // Canal de origen real de la hoja (calculadora, chatbot, etc.)
+      const source = mapSheetCanalToSource(row['Canal de Origen']);
 
       const precio = String(row['Precio Vivienda COP'] || '').replace(/[^\d]/g, '');
       const subsidio = String(row['Subsidio Total COP'] || '').replace(/[^\d]/g, '');
@@ -1836,8 +1877,8 @@ app.post('/api/crm/import-sheet', verifyCrmAuth, async (req, res) => {
         phone: String(row['Teléfono / WhatsApp'] || '').trim(),
         project: String(row['Proyecto de Interés'] || 'Consulta General').trim(),
         subsidyStatus: String(row['Estado Sisbén / Subsidio'] || 'En validación / Requiere asesoría').trim(),
-        source: 'formulario',
-        status: 'Nuevo',
+        source,
+        status,
         message: String(row['Mensaje o Consulta'] || '').trim() || undefined,
         calculatorDetails: (precio || subsidio || credito || cuota)
           ? {
@@ -1866,12 +1907,21 @@ app.post('/api/crm/import-sheet', verifyCrmAuth, async (req, res) => {
       // Evitar duplicados por número de radicado
       if (pqrsStore.some((p) => p.radicadoCode === radicado)) { skippedPqrs++; continue; }
 
-      const fecha = row['Fecha / Hora'];
-      const createdAt = fecha instanceof Date ? fecha.toISOString() : new Date().toISOString();
+      // Fecha real guardada en la hoja (hora de Colombia); si no existe, usa ahora
+      const createdAt = parseSheetDate(row['Fecha / Hora']) || new Date().toISOString();
       const tipoRaw = String(row['Tipo de PQRS'] || 'Petición').trim();
       const tipoValido = (['Petición', 'Queja', 'Reclamo', 'Sugerencia'] as const).includes(tipoRaw as any)
         ? (tipoRaw as PQRSStore['type'])
         : 'Petición';
+
+      // Estado real de la hoja (solo si es un valor válido del CRM)
+      const estadoHoja = String(row['Estado'] || '').trim() as PQRSStore['status'];
+      const status = VALID_PQRS_STATUSES.includes(estadoHoja) ? estadoHoja : 'Pendiente';
+
+      // Respuesta oficial y fecha de respuesta (si la hoja la tiene)
+      const officialResponse = String(row['Respuesta Oficial'] || '').trim() || undefined;
+      const respondedAt = parseSheetDate(row['Fecha Respuesta']) || undefined;
+      const respondedBy = String(row['Respondido Por'] || '').trim() || undefined;
 
       const nuevoPqrs: PQRSStore = {
         id: `pqrs-imported-${radicado}`,
@@ -1882,10 +1932,12 @@ app.post('/api/crm/import-sheet', verifyCrmAuth, async (req, res) => {
         email: String(row['Correo Electrónico'] || '').trim(),
         project: String(row['Proyecto Relacionado'] || 'Administración General').trim(),
         message: String(row['Descripción del Requerimiento'] || '').trim(),
-        status: 'Pendiente',
+        status,
         createdAt,
         legalDeadlineDays: parseInt(String(row['Días Término Legal'] || '15'), 10) || 15,
-        officialResponse: String(row['Respuesta Oficial'] || '').trim() || undefined,
+        officialResponse,
+        respondedAt: officialResponse ? (respondedAt || createdAt) : undefined,
+        respondedBy: officialResponse ? respondedBy : undefined,
         syncedToGoogleSheet: true, // Ya está en la hoja, no reenviar
       };
       pqrsStore.push(nuevoPqrs);
