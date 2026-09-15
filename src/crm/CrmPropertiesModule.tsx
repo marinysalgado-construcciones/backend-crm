@@ -187,6 +187,8 @@ export const CrmPropertiesModule: React.FC<CrmPropertiesModuleProps> = ({
           onPropertyUpdated(data.property);
           onShowToast(`✓ Inmueble "${data.property.name}" actualizado`);
           setIsModalOpen(false);
+          // Re-consulta del catálogo para actualizar el frontend público
+          window.dispatchEvent(new Event('mys:catalog-updated'));
         } else {
           alert(data.error || 'Error al actualizar propiedad');
         }
@@ -205,6 +207,8 @@ export const CrmPropertiesModule: React.FC<CrmPropertiesModuleProps> = ({
           onPropertyCreated(data.property);
           onShowToast(`✓ Inmueble "${data.property.name}" creado exitosamente`);
           setIsModalOpen(false);
+          // Re-consulta del catálogo para actualizar el frontend público
+          window.dispatchEvent(new Event('mys:catalog-updated'));
         } else {
           alert(data.error || 'Error al crear propiedad');
         }

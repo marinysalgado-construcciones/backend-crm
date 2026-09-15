@@ -297,7 +297,17 @@ function saveSheetConfig(url: string) {
   }
 }
 
-let activeGoogleSheetWebhookUrl = process.env.GOOGLE_SHEET_WEBHOOK_URL || loadSavedSheetConfig() || '';
+// v2.2: URL por defecto del Apps Script de la hoja del CRM. Sirve de respaldo
+// porque Render borra el archivo de configuración (.sheet_config.json) en cada deploy.
+const DEFAULT_SHEET_WEBHOOK_URL =
+  'https://script.google.com/macros/s/AKfycbxbrDTkryZo0x4ugcegw5NYrV-6X25aKFhF7rPCYaUI9KeS_k1iB0RjI0GJzPIZZuwv/exec';
+
+let activeGoogleSheetWebhookUrl =
+  process.env.GOOGLE_SHEET_WEBHOOK_URL || loadSavedSheetConfig() || DEFAULT_SHEET_WEBHOOK_URL;
+
+// v2.2: Verdadero cuando la hoja tiene el Apps Script v2.2 (soporta respaldo de
+// Proyectos y Propiedades). Se activa al leer la hoja con éxito.
+let sheetCatalogReady = false;
 
 // Clave secreta compartida con el Apps Script v2.1 para EXPORTAR datos de la hoja al panel.
 // Debe ser idéntica a la variable CLAVE_EXPORTACION del script de Google.
@@ -392,17 +402,17 @@ const PROPERTIES_STORE_FILE = path.join(process.cwd(), '.properties_store.json')
 
 const SEED_PROJECTS: ServerProject[] = [
   {
-    id: 'urbanizacion-los-alamos',
-    name: 'Urbanización Los Álamos',
+    id: 'urbanizacion-santa-clara-1',
+    name: 'Urbanización Santa Clara 1',
     projectType: 'VIS',
-    location: 'Cartago, Sector Norte - Valle del Cauca',
+    location: 'Cartago, Sector Santa Ana',
     zone: 'norte',
-    status: 'Preventa',
-    priceRange: 'Desde $195.750.000 COP (135 SMMLV)',
-    priceCOP: 195750000,
-    priceSMMLV: 135,
-    description: 'Urbanización Los Álamos combina armonía natural y arquitectura contemporánea en el Sector Norte de Cartago. Casas unifamiliares diseñadas con amplios espacios, ventilación cruzada e iluminación natural, pensadas para el bienestar familiar aplicando a subsidios VIS.',
-    shortDescription: 'Casas unifamiliares con acabados y diseño sismorresistente en el sector norte de mayor valorización.',
+    status: 'En Obra',
+    priceRange: 'Desde $187.000.000 COP (107 SMMLV)',
+    priceCOP: 187000000,
+    priceSMMLV: 107,
+    description: 'Urbanización Santa Clara 1, combina armonía natural y arquitectura urbana en el Sector Noroeste de Cartago. Casas unifamiliares diseñadas con 3 alcobas, ventilación cruzada e iluminación natural, pensadas para el bienestar familiar aplicando a subsidio.',
+    shortDescription: 'Casas unifamiliares con acabados 50% en obra blanca. En el sector norte de mayor valorización.',
     constructionStage: 'En Obra',
     heroImage: 'https://lh3.googleusercontent.com/aida/AEtjO1WzmJjPEXcy05boPwamPvH-RWmZKkSpQIrpjrSpv6Q4LxVKYDdbK8PsmSECyKZdMmdzlPQh6V9yLAfEc2xGQHGsSe8I0m0UWUmXzxGu3Xl8JvkywVC4T_dAfB5eIjOkLwsyrNM0anNa6fgF3Lrwpyp5jahAzYzgrbqGfbPEn-NQxpWqM12_2hieP00HAIlF70_a7FnayH5LTZQvSg0tK8myZNUm6bQeR2Wz3mLFm2f6FToCFuYZUwCS4w',
     photos: [
@@ -420,17 +430,17 @@ const SEED_PROJECTS: ServerProject[] = [
     createdAt: new Date().toISOString(),
   },
   {
-    id: 'residencial-el-saman',
-    name: 'Residencial El Samán',
+    id: 'urbanizacion-santa-clara-2',
+    name: 'Urbanización Santa Clara 2',
     projectType: 'VIS',
-    location: 'Cartago, Vía Zaragoza - Valle del Cauca',
-    zone: 'zaragoza',
-    status: 'Lanzamiento',
-    priceRange: 'Desde $159.500.000 COP (110 SMMLV)',
-    priceCOP: 159500000,
-    priceSMMLV: 110,
-    description: 'Residencial El Samán representa una oportunidad única para consolidar el sueño de tener vivienda propia en Cartago. Ubicado sobre la estratégica Vía Zaragoza a sólo 8 minutos del C.C. Nuestro Cartago, este conjunto ofrece apartamentos con excelente distribución, ascensor por torre y club house.',
-    shortDescription: 'Apartamentos modernos de 2 y 3 alcobas con balcón y club house en conjunto cerrado.',
+    location: 'Cartago, Sector Santa Ana',
+    zone: 'norte',
+    status: 'En Obra',
+    priceRange: 'Desde $169.000.000 COP (97 SMMLV)',
+    priceCOP: 169000000,
+    priceSMMLV: 97,
+    description: 'Urbanización Santa Clara 2, frente a Santa Clara 1, combina armonía natural y arquitectura urbana en el Sector Noroeste de Cartago. Casas unifamiliares diseñadas con 3 alcobas, ventilación cruzada e iluminación natural, pensadas para el bienestar familiar aplicando a subsidio.',
+    shortDescription: 'Casas unifamiliares con acabados 50% en obra blanca. En el sector norte de mayor valorización.',
     constructionStage: 'En Obra',
     heroImage: 'https://lh3.googleusercontent.com/aida/AEtjO1W0EFz6VMqBr_kurg6YW3huRcbip6yen7I7SDtBdHs9eFgO88uk8J68rbT9s-Y_N21I3yJexaoiJtgNyGx5nzsh-Ucz1eyxp9FyHjRGrhhivRPqnSNY9PkVrlT1S_LPWkmLUQr4V7B52PyBO-pUCEtU8WHQ_bNeWeW6drF9PJrawH4CKzqMiUbite2xRyvituo4e48RoX9jWRUfWQFrZXcnarWHVTsVNXkJXhFqdti6AqlBIJV3gazvAg',
     photos: [
@@ -440,11 +450,11 @@ const SEED_PROJECTS: ServerProject[] = [
       'https://lh3.googleusercontent.com/aida/AEtjO1WJNa-Rr2H-VlTOHeDwCj3Xac21-qfxghonBmcbEUoY-pfvJO2TXLosNYooOweNzxbJITIzr73I7_VAhz-1ecSAYsPHgJ8pPBs1C64mT-IXucQA6DaONTF_ajQAmZCBzfd8hEtbl67-hqzO6ov7WIHj83Mp6P22hmWpurkg-gfrZsIOB0OUDipaYS1RfKVZz4PQ9c_jkQOFlFjq0KT83gVt86UbfYOQmj18vKUhouJKQMSQr8lyrvzSKQ',
     ],
     features: [
-      { icon: 'location_on', title: 'Vía Zaragoza', description: 'A 8 minutos del C.C. Nuestro Cartago con excelente transporte.' },
-      { icon: 'pool', title: 'Club House', description: 'Piscina para adultos y niños, salón de eventos y BBQ.' },
-      { icon: 'security', title: 'Seguridad Privada', description: 'Portería con control sistematizado 24/7.' },
+      { icon: 'location_on', title: 'Sector Santa Ana', description: 'A 5 minutos del C.C. Nuestro Cartago con excelente transporte.' },
+      { icon: 'park', title: 'Vivienda Bioclimática', description: 'Cubierta bioclimática.' },
+      { icon: 'verified', title: 'Aplica Subsidio De Caja De Compensación', description: 'Aplica a subsidios de cualquier caja de compensación.' },
     ],
-    deliveryYear: '2025 - 2026',
+    deliveryYear: '2027 - 2028',
     createdAt: new Date().toISOString(),
   },
 ];
@@ -554,15 +564,15 @@ function loadProjectsStore(): ServerProject[] {
   try {
     if (fs.existsSync(PROJECTS_STORE_FILE)) {
       const data = JSON.parse(fs.readFileSync(PROJECTS_STORE_FILE, 'utf8'));
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         return data;
       }
     }
   } catch (err) {
-    console.error('Error loading projects store, fallback to seed:', err);
+    console.error('Error loading projects store:', err);
   }
-  saveProjectsStore(SEED_PROJECTS);
-  return [...SEED_PROJECTS];
+  // Sin datos reales guardados: inventario vacío (sin plantillas de ejemplo)
+  return [];
 }
 
 function saveProjectsStore(projects: ServerProject[]) {
@@ -577,15 +587,15 @@ function loadPropertiesStore(): ServerProperty[] {
   try {
     if (fs.existsSync(PROPERTIES_STORE_FILE)) {
       const data = JSON.parse(fs.readFileSync(PROPERTIES_STORE_FILE, 'utf8'));
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         return data;
       }
     }
   } catch (err) {
-    console.error('Error loading properties store, fallback to seed:', err);
+    console.error('Error loading properties store:', err);
   }
-  savePropertiesStore(SEED_PROPERTIES);
-  return [...SEED_PROPERTIES];
+  // Sin datos reales guardados: inventario vacío (sin plantillas de ejemplo)
+  return [];
 }
 
 function savePropertiesStore(properties: ServerProperty[]) {
@@ -609,9 +619,11 @@ function loadLeadsStore(): CRMLeadStore[] {
       }
     }
   } catch (err) {
-    console.error('Error loading leads store, fallback to seed:', err);
+    console.error('Error loading leads store, starting empty:', err);
   }
-  return [...SEED_LEADS];
+  // v2.2: Sin datos locales se inicia vacío; al arrancar el servidor se
+  // recuperan automáticamente los registros reales desde Google Sheet.
+  return [];
 }
 
 function saveLeadsStore(leads: CRMLeadStore[]) {
@@ -631,9 +643,11 @@ function loadPqrsStore(): PQRSStore[] {
       }
     }
   } catch (err) {
-    console.error('Error loading pqrs store, fallback to seed:', err);
+    console.error('Error loading pqrs store, starting empty:', err);
   }
-  return [...SEED_PQRS];
+  // v2.2: Sin datos locales se inicia vacío; al arrancar el servidor se
+  // recuperan automáticamente los registros reales desde Google Sheet.
+  return [];
 }
 
 function savePqrsStore(pqrs: PQRSStore[]) {
@@ -810,6 +824,9 @@ app.post('/api/crm/projects', verifyCrmAuth, (req, res) => {
     activeProjects.unshift(newProject);
     saveProjectsStore(activeProjects);
 
+    // v2.2: Respaldo del proyecto en la hoja de Google
+    syncCatalogToSheet('project', newProject);
+
     res.status(201).json({ success: true, project: newProject, message: 'Proyecto creado exitosamente' });
   } catch (err: any) {
     console.error('Error creating project:', err);
@@ -842,14 +859,18 @@ app.put('/api/crm/projects/:id', verifyCrmAuth, (req, res) => {
     activeProjects[idx] = updated;
     saveProjectsStore(activeProjects);
 
+    // v2.2: Respaldo del proyecto en la hoja de Google
+    syncCatalogToSheet('project', updated);
+
     // Sync project name in properties if changed
     if (req.body.name && req.body.name !== current.name) {
-      activeProperties.forEach((prop) => {
-        if (prop.projectId === current.id) {
-          prop.projectName = req.body.name;
-        }
+      const affectedProps = activeProperties.filter((prop) => prop.projectId === current.id);
+      affectedProps.forEach((prop) => {
+        prop.projectName = req.body.name;
       });
       savePropertiesStore(activeProperties);
+      // v2.2: mantener el nombre sincronizado en las propiedades respaldadas
+      affectedProps.forEach((prop) => syncCatalogToSheet('property', prop));
     }
 
     res.json({ success: true, project: updated, message: 'Proyecto actualizado exitosamente' });
@@ -871,13 +892,16 @@ app.delete('/api/crm/projects/:id', verifyCrmAuth, (req, res) => {
     saveProjectsStore(activeProjects);
 
     // Unlink properties associated with this project
-    activeProperties.forEach((prop) => {
-      if (prop.projectId === removed.id) {
-        prop.projectId = null;
-        prop.projectName = 'Independiente';
-      }
+    const affectedProps = activeProperties.filter((prop) => prop.projectId === removed.id);
+    affectedProps.forEach((prop) => {
+      prop.projectId = null;
+      prop.projectName = 'Independiente';
     });
     savePropertiesStore(activeProperties);
+
+    // v2.2: Reflejar la eliminación en la hoja de Google
+    syncCatalogToSheet('project', { id: removed.id }, true);
+    affectedProps.forEach((prop) => syncCatalogToSheet('property', prop));
 
     res.json({ success: true, message: `Proyecto ${removed.name} eliminado exitosamente` });
   } catch (err: any) {
@@ -941,6 +965,9 @@ app.post('/api/crm/properties', verifyCrmAuth, (req, res) => {
     activeProperties.unshift(newProperty);
     savePropertiesStore(activeProperties);
 
+    // v2.2: Respaldo de la propiedad en la hoja de Google
+    syncCatalogToSheet('property', newProperty);
+
     res.status(201).json({ success: true, property: newProperty, message: 'Propiedad creada exitosamente' });
   } catch (err: any) {
     console.error('Error creating property:', err);
@@ -983,6 +1010,9 @@ app.put('/api/crm/properties/:id', verifyCrmAuth, (req, res) => {
     activeProperties[idx] = updated;
     savePropertiesStore(activeProperties);
 
+    // v2.2: Respaldo de la propiedad en la hoja de Google
+    syncCatalogToSheet('property', updated);
+
     res.json({ success: true, property: updated, message: 'Propiedad actualizada exitosamente' });
   } catch (err: any) {
     console.error('Error updating property:', err);
@@ -1000,6 +1030,9 @@ app.delete('/api/crm/properties/:id', verifyCrmAuth, (req, res) => {
 
     const removed = activeProperties.splice(idx, 1)[0];
     savePropertiesStore(activeProperties);
+
+    // v2.2: Reflejar la eliminación en la hoja de Google
+    syncCatalogToSheet('property', { id: removed.id }, true);
 
     res.json({ success: true, message: `Propiedad ${removed.name} eliminada exitosamente` });
   } catch (err: any) {
@@ -1301,6 +1334,66 @@ async function forwardToGoogleSheet(
       success: false,
       message: `Fallo de conexión con Google: ${err?.message || 'Verifica la URL del Webhook.'}`,
     };
+  }
+}
+
+// v2.2: Enviar un Proyecto o Propiedad a la hoja de Google como respaldo en la nube.
+// Crea o actualiza la fila según el ID; con isDelete elimina la fila.
+// Si falla solo se registra un aviso (nunca interrumpe el funcionamiento del panel).
+async function syncCatalogToSheet(kind: 'project' | 'property', item: any, isDelete = false): Promise<void> {
+  if (!sheetCatalogReady) return; // La hoja aún no tiene el Apps Script v2.2
+  const targetUrl = (activeGoogleSheetWebhookUrl || '').trim();
+  if (!targetUrl.startsWith('http')) return;
+  try {
+    const payload = {
+      action: isDelete ? `${kind}-delete` : kind,
+      id: item.id,
+      nombre: item.name,
+      datos: JSON.stringify(item),
+    };
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    await fetch(targetUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+      redirect: 'follow',
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+  } catch (err: any) {
+    console.warn(`No se pudo respaldar ${kind} en Google Sheet:`, err?.message);
+  }
+}
+
+// v2.2: Pedir todos los datos a la hoja de Google (exportación del Apps Script).
+// Nunca lanza errores: devuelve ok:false con el mensaje correspondiente.
+async function fetchSheetExport(
+  targetUrl: string
+): Promise<{ ok: boolean; data?: any; error?: string }> {
+  try {
+    const exportUrl = `${targetUrl}?action=export&key=${encodeURIComponent(EXPORT_SECRET)}`;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 25000);
+    const sheetRes = await fetch(exportUrl, { method: 'GET', signal: controller.signal, redirect: 'follow' });
+    clearTimeout(timeout);
+
+    const rawText = await sheetRes.text();
+    let data: any;
+    try {
+      data = JSON.parse(rawText);
+    } catch (parseErr) {
+      return {
+        ok: false,
+        error: 'La hoja de Google no devolvió datos válidos. Verifica que el Apps Script sea la versión 2.2 (con respaldo de proyectos) y que el acceso sea "Cualquier usuario".',
+      };
+    }
+    if (data.status !== 'success') {
+      return { ok: false, error: data.mensaje || 'Error al leer la hoja de Google.' };
+    }
+    return { ok: true, data };
+  } catch (err: any) {
+    return { ok: false, error: 'No se pudo conectar con la hoja de Google: ' + (err?.message || 'error desconocido') };
   }
 }
 
@@ -1749,13 +1842,25 @@ app.post('/api/crm/sync-sheet', verifyCrmAuth, async (req, res) => {
     }
     savePqrsStore(pqrsStore);
 
+    // NUEVO v2.2: Sincronización en ambos sentidos — además de enviar, se traen
+    // desde la hoja los registros que falten en el panel (p. ej. tras un reinicio).
+    let extraNote = '';
+    try {
+      const { summary } = await importFromSheetInternal(activeGoogleSheetWebhookUrl);
+      if (summary && (summary.importedLeads > 0 || summary.importedPqrs > 0)) {
+        extraNote = ` Además se trajeron ${summary.importedLeads} prospecto(s) y ${summary.importedPqrs} PQRS desde la hoja.`;
+      }
+    } catch {
+      // La importación adicional es opcional: no debe romper la sincronización.
+    }
+
     res.json({
       success: true,
       syncedCount: syncedLeadsCount + syncedPqrsCount,
       syncedLeadsCount,
       syncedPqrsCount,
       webhookUrl: activeGoogleSheetWebhookUrl,
-      message: `Se sincronizaron ${syncedLeadsCount} prospecto(s) y ${syncedPqrsCount} PQRS exitosamente con Google Sheets`,
+      message: `Se sincronizaron ${syncedLeadsCount} prospecto(s) y ${syncedPqrsCount} PQRS exitosamente con Google Sheets.${extraNote}`,
     });
   } catch (error: any) {
     console.error('Error in /api/crm/sync-sheet:', error);
@@ -1808,9 +1913,176 @@ const VALID_LEAD_STATUSES: CRMLeadStore['status'][] = [
 ];
 const VALID_PQRS_STATUSES: PQRSStore['status'][] = ['Pendiente', 'En trámite', 'Respondida / Cerrada'];
 
+// v2.2: Importación completa desde la hoja (contactos, PQRS, proyectos y propiedades).
+// Es la misma lógica del botón "Importar", pero reutilizable: la usa el botón y
+// también el arranque del servidor para recuperar los datos tras un reinicio.
+async function importFromSheetInternal(
+  targetUrl: string
+): Promise<{ summary: { importedLeads: number; importedPqrs: number; importedProjects: number; importedProperties: number; skipped: number }; error?: string }> {
+  const summary = { importedLeads: 0, importedPqrs: 0, importedProjects: 0, importedProperties: 0, skipped: 0 };
+
+  const url = (targetUrl || activeGoogleSheetWebhookUrl || '').trim();
+  if (!url) {
+    return { summary, error: 'Primero configura la URL del Webhook de Google Sheets.' };
+  }
+
+  const result = await fetchSheetExport(url);
+  if (!result.ok) {
+    return { summary, error: result.error };
+  }
+  const data = result.data;
+
+  // v2.2: La hoja respondió con éxito → tiene el Apps Script con exportación.
+  // A partir de aquí se pueden respaldar proyectos y propiedades en la hoja.
+  sheetCatalogReady = true;
+
+  // --- Importar Leads (pestaña Prospectos_Leads) ---
+  const sheetLeads: any[] = Array.isArray(data.leads) ? data.leads : [];
+  for (const row of sheetLeads) {
+    const leadId = String(row['ID Prospecto'] || '').trim();
+    const leadName = String(row['Nombre Completo'] || '').trim();
+    if (!leadId || !leadName) { summary.skipped++; continue; }
+
+    // Evitar duplicados: si ya existe en el panel, no lo vuelve a traer
+    if (crmLeads.some((l) => l.id === leadId)) { summary.skipped++; continue; }
+
+    // Fecha real guardada en la hoja (hora de Colombia); si no existe, usa ahora
+    const createdAt = parseSheetDate(row['Fecha / Hora']) || new Date().toISOString();
+
+    // Estado comercial real de la hoja (solo si es un valor válido del CRM)
+    const estadoHoja = String(row['Estado CRM'] || '').trim() as CRMLeadStore['status'];
+    const status = VALID_LEAD_STATUSES.includes(estadoHoja) ? estadoHoja : 'Nuevo';
+
+    // Canal de origen real de la hoja (calculadora, chatbot, etc.)
+    const source = mapSheetCanalToSource(row['Canal de Origen']);
+
+    const precio = String(row['Precio Vivienda COP'] || '').replace(/[^\d]/g, '');
+    const subsidio = String(row['Subsidio Total COP'] || '').replace(/[^\d]/g, '');
+    const credito = String(row['Monto Crédito COP'] || '').replace(/[^\d]/g, '');
+    const cuota = String(row['Cuota Mensual Est.'] || '').replace(/[^\d]/g, '');
+    const plazo = parseInt(String(row['Plazo (Años)'] || '0'), 10) || undefined;
+
+    const importedLead: CRMLeadStore = {
+      id: leadId,
+      name: leadName,
+      email: String(row['Correo Electrónico'] || '').trim(),
+      phone: String(row['Teléfono / WhatsApp'] || '').trim(),
+      project: String(row['Proyecto de Interés'] || 'Consulta General').trim(),
+      subsidyStatus: String(row['Estado Sisbén / Subsidio'] || 'En validación / Requiere asesoría').trim(),
+      source,
+      status,
+      message: String(row['Mensaje o Consulta'] || '').trim() || undefined,
+      calculatorDetails: (precio || subsidio || credito || cuota)
+        ? {
+            totalHousePrice: Number(precio) || 0,
+            totalSubsidies: Number(subsidio) || 0,
+            loanAmount: Number(credito) || 0,
+            monthlyPayment: Number(cuota) || 0,
+            termYears: plazo || 0,
+          }
+        : undefined,
+      createdAt,
+      syncedToGoogleSheet: true, // Ya está en la hoja, no reenviar
+      notes: [],
+    };
+    crmLeads.push(importedLead);
+    summary.importedLeads++;
+  }
+
+  // --- Importar PQRS (pestaña PQRS_Ciudadano) ---
+  const sheetPqrs: any[] = Array.isArray(data.pqrs) ? data.pqrs : [];
+  for (const row of sheetPqrs) {
+    const radicado = String(row['N° Radicado'] || '').trim();
+    const nombre = String(row['Nombre del Ciudadano'] || '').trim();
+    if (!radicado || !nombre) { summary.skipped++; continue; }
+
+    // Evitar duplicados por número de radicado
+    if (pqrsStore.some((p) => p.radicadoCode === radicado)) { summary.skipped++; continue; }
+
+    // Fecha real guardada en la hoja (hora de Colombia); si no existe, usa ahora
+    const createdAt = parseSheetDate(row['Fecha / Hora']) || new Date().toISOString();
+    const tipoRaw = String(row['Tipo de PQRS'] || 'Petición').trim();
+    const tipoValido = (['Petición', 'Queja', 'Reclamo', 'Sugerencia'] as const).includes(tipoRaw as any)
+      ? (tipoRaw as PQRSStore['type'])
+      : 'Petición';
+
+    // Estado real de la hoja (solo si es un valor válido del CRM)
+    const estadoHoja = String(row['Estado'] || '').trim() as PQRSStore['status'];
+    const status = VALID_PQRS_STATUSES.includes(estadoHoja) ? estadoHoja : 'Pendiente';
+
+    // Respuesta oficial y fecha de respuesta (si la hoja la tiene)
+    const officialResponse = String(row['Respuesta Oficial'] || '').trim() || undefined;
+    const respondedAt = parseSheetDate(row['Fecha Respuesta']) || undefined;
+    const respondedBy = String(row['Respondido Por'] || '').trim() || undefined;
+
+    const nuevoPqrs: PQRSStore = {
+      id: `pqrs-imported-${radicado}`,
+      radicadoCode: radicado,
+      type: tipoValido,
+      name: nombre,
+      phone: String(row['Teléfono / Celular'] || '').trim(),
+      email: String(row['Correo Electrónico'] || '').trim(),
+      project: String(row['Proyecto Relacionado'] || 'Administración General').trim(),
+      message: String(row['Descripción del Requerimiento'] || '').trim(),
+      status,
+      createdAt,
+      legalDeadlineDays: parseInt(String(row['Días Término Legal'] || '15'), 10) || 15,
+      officialResponse,
+      respondedAt: officialResponse ? (respondedAt || createdAt) : undefined,
+      respondedBy: officialResponse ? respondedBy : undefined,
+      syncedToGoogleSheet: true, // Ya está en la hoja, no reenviar
+    };
+    pqrsStore.push(nuevoPqrs);
+    summary.importedPqrs++;
+  }
+
+  // --- v2.2: Importar Proyectos (pestaña Proyectos_Catalogo) ---
+  const sheetProjects: any[] = Array.isArray(data.projects) ? data.projects : [];
+  for (const row of sheetProjects) {
+    const projId = String(row['ID'] || '').trim();
+    let datos: any = null;
+    try {
+      datos = row['Datos JSON'] ? JSON.parse(String(row['Datos JSON'])) : null;
+    } catch {
+      datos = null;
+    }
+    if (!projId || !datos || !datos.name) { summary.skipped++; continue; }
+    if (activeProjects.some((p) => p.id === projId)) { summary.skipped++; continue; }
+    activeProjects.push({ ...datos, id: projId });
+    summary.importedProjects++;
+  }
+
+  // --- v2.2: Importar Propiedades (pestaña Propiedades_Catalogo) ---
+  const sheetProperties: any[] = Array.isArray(data.properties) ? data.properties : [];
+  for (const row of sheetProperties) {
+    const propId = String(row['ID'] || '').trim();
+    let datos: any = null;
+    try {
+      datos = row['Datos JSON'] ? JSON.parse(String(row['Datos JSON'])) : null;
+    } catch {
+      datos = null;
+    }
+    if (!propId || !datos || !datos.name) { summary.skipped++; continue; }
+    if (activeProperties.some((p) => p.id === propId)) { summary.skipped++; continue; }
+    activeProperties.push({ ...datos, id: propId });
+    summary.importedProperties++;
+  }
+
+  // Ordenar del más reciente al más antiguo y guardar en archivo
+  crmLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  pqrsStore.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  saveLeadsStore(crmLeads);
+  savePqrsStore(pqrsStore);
+  saveProjectsStore(activeProjects);
+  savePropertiesStore(activeProperties);
+
+  return { summary };
+}
+
 // 14. PROTECTED: IMPORTAR todos los datos desde Google Sheet al Panel CRM
 // Trae los registros históricos de las pestañas Prospectos_Leads y PQRS_Ciudadano
 // para que aparezcan en el Panel de Control Central (métricas y módulos).
+// v2.2: También trae Proyectos y Propiedades respaldados en la hoja.
 app.post('/api/crm/import-sheet', verifyCrmAuth, async (req, res) => {
   try {
     const targetUrl = (req.body.webhookUrl || activeGoogleSheetWebhookUrl || '').trim();
@@ -1818,145 +2090,27 @@ app.post('/api/crm/import-sheet', verifyCrmAuth, async (req, res) => {
       return res.status(400).json({ error: 'Primero configura la URL del Webhook de Google Sheets.' });
     }
 
-    // Pedir todos los datos a la hoja (el Apps Script v2.1 los devuelve con la clave)
-    const exportUrl = `${targetUrl}?action=export&key=${encodeURIComponent(EXPORT_SECRET)}`;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 25000);
-    const sheetRes = await fetch(exportUrl, { method: 'GET', signal: controller.signal, redirect: 'follow' });
-    clearTimeout(timeout);
-
-    const rawText = await sheetRes.text();
-    let data: any;
-    try {
-      data = JSON.parse(rawText);
-    } catch (parseErr) {
-      return res.status(502).json({
-        error: 'La hoja de Google no devolvió datos válidos. Verifica que el Apps Script sea la versión 2.1 (con exportación) y que el acceso sea "Cualquier usuario".',
-      });
+    const { summary, error } = await importFromSheetInternal(targetUrl);
+    if (error) {
+      return res.status(502).json({ error });
     }
 
-    if (data.status !== 'success') {
-      return res.status(502).json({ error: data.mensaje || 'Error al leer la hoja de Google.' });
-    }
-
-    let importedLeads = 0;
-    let importedPqrs = 0;
-    let skippedLeads = 0;
-    let skippedPqrs = 0;
-
-    // --- Importar Leads (pestaña Prospectos_Leads) ---
-    const sheetLeads: any[] = Array.isArray(data.leads) ? data.leads : [];
-    for (const row of sheetLeads) {
-      const leadId = String(row['ID Prospecto'] || '').trim();
-      const leadName = String(row['Nombre Completo'] || '').trim();
-      if (!leadId || !leadName) { skippedLeads++; continue; }
-
-      // Evitar duplicados: si ya existe en el panel, no lo vuelve a traer
-      if (crmLeads.some((l) => l.id === leadId)) { skippedLeads++; continue; }
-
-      // Fecha real guardada en la hoja (hora de Colombia); si no existe, usa ahora
-      const createdAt = parseSheetDate(row['Fecha / Hora']) || new Date().toISOString();
-
-      // Estado comercial real de la hoja (solo si es un valor válido del CRM)
-      const estadoHoja = String(row['Estado CRM'] || '').trim() as CRMLeadStore['status'];
-      const status = VALID_LEAD_STATUSES.includes(estadoHoja) ? estadoHoja : 'Nuevo';
-
-      // Canal de origen real de la hoja (calculadora, chatbot, etc.)
-      const source = mapSheetCanalToSource(row['Canal de Origen']);
-
-      const precio = String(row['Precio Vivienda COP'] || '').replace(/[^\d]/g, '');
-      const subsidio = String(row['Subsidio Total COP'] || '').replace(/[^\d]/g, '');
-      const credito = String(row['Monto Crédito COP'] || '').replace(/[^\d]/g, '');
-      const cuota = String(row['Cuota Mensual Est.'] || '').replace(/[^\d]/g, '');
-      const plazo = parseInt(String(row['Plazo (Años)'] || '0'), 10) || undefined;
-
-      const importedLead: CRMLeadStore = {
-        id: leadId,
-        name: leadName,
-        email: String(row['Correo Electrónico'] || '').trim(),
-        phone: String(row['Teléfono / WhatsApp'] || '').trim(),
-        project: String(row['Proyecto de Interés'] || 'Consulta General').trim(),
-        subsidyStatus: String(row['Estado Sisbén / Subsidio'] || 'En validación / Requiere asesoría').trim(),
-        source,
-        status,
-        message: String(row['Mensaje o Consulta'] || '').trim() || undefined,
-        calculatorDetails: (precio || subsidio || credito || cuota)
-          ? {
-              totalHousePrice: Number(precio) || 0,
-              totalSubsidies: Number(subsidio) || 0,
-              loanAmount: Number(credito) || 0,
-              monthlyPayment: Number(cuota) || 0,
-              termYears: plazo || 0,
-            }
-          : undefined,
-        createdAt,
-        syncedToGoogleSheet: true, // Ya está en la hoja, no reenviar
-        notes: [],
-      };
-      crmLeads.push(importedLead);
-      importedLeads++;
-    }
-
-    // --- Importar PQRS (pestaña PQRS_Ciudadano) ---
-    const sheetPqrs: any[] = Array.isArray(data.pqrs) ? data.pqrs : [];
-    for (const row of sheetPqrs) {
-      const radicado = String(row['N° Radicado'] || '').trim();
-      const nombre = String(row['Nombre del Ciudadano'] || '').trim();
-      if (!radicado || !nombre) { skippedPqrs++; continue; }
-
-      // Evitar duplicados por número de radicado
-      if (pqrsStore.some((p) => p.radicadoCode === radicado)) { skippedPqrs++; continue; }
-
-      // Fecha real guardada en la hoja (hora de Colombia); si no existe, usa ahora
-      const createdAt = parseSheetDate(row['Fecha / Hora']) || new Date().toISOString();
-      const tipoRaw = String(row['Tipo de PQRS'] || 'Petición').trim();
-      const tipoValido = (['Petición', 'Queja', 'Reclamo', 'Sugerencia'] as const).includes(tipoRaw as any)
-        ? (tipoRaw as PQRSStore['type'])
-        : 'Petición';
-
-      // Estado real de la hoja (solo si es un valor válido del CRM)
-      const estadoHoja = String(row['Estado'] || '').trim() as PQRSStore['status'];
-      const status = VALID_PQRS_STATUSES.includes(estadoHoja) ? estadoHoja : 'Pendiente';
-
-      // Respuesta oficial y fecha de respuesta (si la hoja la tiene)
-      const officialResponse = String(row['Respuesta Oficial'] || '').trim() || undefined;
-      const respondedAt = parseSheetDate(row['Fecha Respuesta']) || undefined;
-      const respondedBy = String(row['Respondido Por'] || '').trim() || undefined;
-
-      const nuevoPqrs: PQRSStore = {
-        id: `pqrs-imported-${radicado}`,
-        radicadoCode: radicado,
-        type: tipoValido,
-        name: nombre,
-        phone: String(row['Teléfono / Celular'] || '').trim(),
-        email: String(row['Correo Electrónico'] || '').trim(),
-        project: String(row['Proyecto Relacionado'] || 'Administración General').trim(),
-        message: String(row['Descripción del Requerimiento'] || '').trim(),
-        status,
-        createdAt,
-        legalDeadlineDays: parseInt(String(row['Días Término Legal'] || '15'), 10) || 15,
-        officialResponse,
-        respondedAt: officialResponse ? (respondedAt || createdAt) : undefined,
-        respondedBy: officialResponse ? respondedBy : undefined,
-        syncedToGoogleSheet: true, // Ya está en la hoja, no reenviar
-      };
-      pqrsStore.push(nuevoPqrs);
-      importedPqrs++;
-    }
-
-    // Ordenar del más reciente al más antiguo y guardar en archivo
-    crmLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    pqrsStore.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    saveLeadsStore(crmLeads);
-    savePqrsStore(pqrsStore);
+    const partes: string[] = [];
+    if (summary.importedLeads) partes.push(`${summary.importedLeads} prospecto(s)`);
+    if (summary.importedPqrs) partes.push(`${summary.importedPqrs} PQRS`);
+    if (summary.importedProjects) partes.push(`${summary.importedProjects} proyecto(s)`);
+    if (summary.importedProperties) partes.push(`${summary.importedProperties} propiedad(es)`);
+    const detalle = partes.length > 0 ? partes.join(' y ') : 'ningún registro nuevo';
 
     res.json({
       success: true,
-      importedLeads,
-      importedPqrs,
-      skippedLeads,
-      skippedPqrs,
-      message: `Importación completada: ${importedLeads} prospecto(s) y ${importedPqrs} PQRS traídos desde Google Sheet. ${skippedLeads + skippedPqrs > 0 ? `(${skippedLeads + skippedPqrs} ya existían o estaban incompletos)` : ''}`,
+      importedLeads: summary.importedLeads,
+      importedPqrs: summary.importedPqrs,
+      importedProjects: summary.importedProjects,
+      importedProperties: summary.importedProperties,
+      skippedLeads: summary.skipped,
+      skippedPqrs: 0,
+      message: `Importación completada: ${detalle} traído(s) desde Google Sheet. ${summary.skipped > 0 ? `(${summary.skipped} ya existían o estaban incompletos)` : ''}`,
     });
   } catch (error: any) {
     console.error('Error in /api/crm/import-sheet:', error);
@@ -1994,6 +2148,23 @@ async function startServer() {
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Marin & Salgado Server running on http://0.0.0.0:${PORT}`);
+
+    // v2.2: Al arrancar, recuperar automáticamente los datos guardados en la
+    // hoja de Google (contactos, PQRS, proyectos y propiedades). Así, aunque
+    // Render borre los archivos locales en un deploy, el panel vuelve a
+    // llenarse solo. No bloquea el arranque del servidor.
+    importFromSheetInternal(activeGoogleSheetWebhookUrl)
+      .then(({ summary }) => {
+        const total = summary.importedLeads + summary.importedPqrs + summary.importedProjects + summary.importedProperties;
+        if (total > 0) {
+          console.log(`[v2.2] Recuperación automática: ${summary.importedLeads} prospecto(s), ${summary.importedPqrs} PQRS, ${summary.importedProjects} proyecto(s) y ${summary.importedProperties} propiedad(es) restaurados desde Google Sheet.`);
+        } else {
+          console.log('[v2.2] Recuperación automática: la hoja no tenía registros nuevos que traer.');
+        }
+      })
+      .catch((err) => {
+        console.warn('[v2.2] No se pudo recuperar datos desde Google Sheet al iniciar:', err?.message || err);
+      });
   });
 }
 

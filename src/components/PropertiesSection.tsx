@@ -153,24 +153,8 @@ export const PropertiesSection: React.FC<PropertiesSectionProps> = ({
 
       {/* Properties Cards Grid */}
       {properties.length === 0 ? (
-        <div className="bg-white rounded-3xl p-12 text-center border border-[#E5E5DF] shadow-xs">
-          <span className="material-symbols-outlined text-5xl text-[#A0ACA2] mb-3">
-            holiday_village
-          </span>
-          <h3 className="text-lg font-serif font-bold text-[#4A4A30]">
-            No encontramos inmuebles con estos criterios
-          </h3>
-          <p className="text-xs text-[#6B6B54] mt-1 mb-5 max-w-md mx-auto">
-            Prueba restableciendo los filtros o contáctanos por WhatsApp para consultar propiedades exclusivas en proceso de lanzamiento.
-          </p>
-          <button
-            type="button"
-            onClick={onClearFilters}
-            className="bg-[#054316] text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-[#075e1f] transition-colors cursor-pointer"
-          >
-            Ver todos los inmuebles
-          </button>
-        </div>
+        /* Empty State: sin datos reales en el inventario */
+        <p className="text-center text-[#6B6B54] text-sm font-light py-12">El inventario está vacío</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
           {properties.map((prop) => {

@@ -1,17 +1,17 @@
 [
   {
-    "id": "urbanizacion-los-alamos",
-    "name": "Urbanización Santa Clara",
+    "id": "urbanizacion-santa-clara-1",
+    "name": "Urbanización Santa Clara 1",
     "projectType": "VIS",
-    "location": "Cartago, Sector Vía Aereopuerto - Valle del Cauca",
-    "zone": "centro",
-    "status": "Preventa",
+    "location": "Cartago, Sector Santa Ana",
+    "zone": "Norte",
+    "status": "En Obra",
     "priceRange": "Desde $187.000.000 COP",
     "priceCOP": 187000000,
     "priceSMMLV": 135,
-    "description": "Urbanización Santa Clara I, combina armonía natural y arquitectura urbana en el Sector Noroeste de Cartago. Casas unifamiliares diseñadas con 3 alcobas, ventilación cruzada e iluminación natural, pensadas para el bienestar familiar aplicando a subsidios VIS.",
-    "shortDescription": "Casas unifamiliares con acabados y diseño sismorresistente en el sector norte de mayor valorización.",
-    "constructionStage": "En Obra",
+    "description": "Urbanización Santa Clara 1, combina armonía natural y arquitectura urbana en el Sector Noroeste de Cartago. Casas unifamiliares diseñadas con 3 alcobas, ventilación cruzada e iluminación natural, pensadas para el bienestar familiar aplicando a subsidio.",
+    "shortDescription": "Casas unifamiliares con acabados 50% en obra blanca. En el sector norte de mayor valorización.",
+    "constructionStage": "En Obra (Activa)",
     "heroImage": "https://lh3.googleusercontent.com/aida/AEtjO1WzmJjPEXcy05boPwamPvH-RWmZKkSpQIrpjrSpv6Q4LxVKYDdbK8PsmSECyKZdMmdzlPQh6V9yLAfEc2xGQHGsSe8I0m0UWUmXzxGu3Xl8JvkywVC4T_dAfB5eIjOkLwsyrNM0anNa6fgF3Lrwpyp5jahAzYzgrbqGfbPEn-NQxpWqM12_2hieP00HAIlF70_a7FnayH5LTZQvSg0tK8myZNUm6bQeR2Wz3mLFm2f6FToCFuYZUwCS4w",
     "photos": [
       "https://lh3.googleusercontent.com/aida/AEtjO1WzmJjPEXcy05boPwamPvH-RWmZKkSpQIrpjrSpv6Q4LxVKYDdbK8PsmSECyKZdMmdzlPQh6V9yLAfEc2xGQHGsSe8I0m0UWUmXzxGu3Xl8JvkywVC4T_dAfB5eIjOkLwsyrNM0anNa6fgF3Lrwpyp5jahAzYzgrbqGfbPEn-NQxpWqM12_2hieP00HAIlF70_a7FnayH5LTZQvSg0tK8myZNUm6bQeR2Wz3mLFm2f6FToCFuYZUwCS4w",
@@ -22,36 +22,36 @@
     "features": [
       {
         "icon": "location_on",
-        "title": "Sector Norte",
-        "description": "Alta valorización y acceso rápido hacia Pereira."
+        "title": "Sector Santa Ana",
+        "description": "A 5 minutos del C.C. Nuestro Cartago con excelente transporte. Alta Valorización."
       },
       {
         "icon": "park",
-        "title": "Zonas Verdes y Parques",
-        "description": "Senderos ecológicos y juegos infantiles."
+        "title": "Vivienda Bioclimática",
+        "description": "Cubierta bioclimática"
       },
       {
         "icon": "verified",
-        "title": "Aplica Subsidio Mi Casa Ya",
-        "description": "Aplica a subsidios concurrentes de vivienda."
+        "title": "Aplica Subsidio De Caja De Compensación",
+        "description": "Aplica a subsidios de cualquier caja de compensación."
       }
     ],
     "deliveryYear": "2027",
     "createdAt": "2026-09-08T21:19:36.320Z"
   },
   {
-    "id": "residencial-el-saman",
-    "name": "Residencial El Samán",
+    "id": "urbanizacion-santa-clara-2",
+    "name": "Urbanización Santa Clara 2",
     "projectType": "VIS",
-    "location": "Cartago, Vía Zaragoza - Valle del Cauca",
-    "zone": "zaragoza",
-    "status": "Lanzamiento",
-    "priceRange": "Desde $159.500.000 COP (110 SMMLV)",
-    "priceCOP": 159500000,
-    "priceSMMLV": 110,
-    "description": "Residencial El Samán representa una oportunidad única para consolidar el sueño de tener vivienda propia en Cartago. Ubicado sobre la estratégica Vía Zaragoza a sólo 8 minutos del C.C. Nuestro Cartago, este conjunto ofrece apartamentos con excelente distribución, ascensor por torre y club house.",
-    "shortDescription": "Apartamentos modernos de 2 y 3 alcobas con balcón y club house en conjunto cerrado.",
-    "constructionStage": "En Obra",
+    "location": "Cartago, Sector Santa Ana",
+    "zone": "Norte",
+    "status": "En Obra",
+    "priceRange": "Desde $169.000.000 COP (97 SMMLV)",
+    "priceCOP": 169000000,
+    "priceSMMLV": 97,
+    "description": "Urbanización Santa Clara 2, frente a Santa Clara 1, combina armonía natural y arquitectura urbana en el Sector Noroeste de Cartago. Casas unifamiliares diseñadas con 3 alcobas, ventilación cruzada e iluminación natural, pensadas para el bienestar familiar aplicando a subsidio.",
+    "shortDescription": "Casas unifamiliares con acabados 50% en obra blanca. En el sector norte de mayor valorización.",
+    "constructionStage": "En Obra (Activa)",
     "heroImage": "https://lh3.googleusercontent.com/aida/AEtjO1W0EFz6VMqBr_kurg6YW3huRcbip6yen7I7SDtBdHs9eFgO88uk8J68rbT9s-Y_N21I3yJexaoiJtgNyGx5nzsh-Ucz1eyxp9FyHjRGrhhivRPqnSNY9PkVrlT1S_LPWkmLUQr4V7B52PyBO-pUCEtU8WHQ_bNeWeW6drF9PJrawH4CKzqMiUbite2xRyvituo4e48RoX9jWRUfWQFrZXcnarWHVTsVNXkJXhFqdti6AqlBIJV3gazvAg",
     "photos": [
       "https://lh3.googleusercontent.com/aida/AEtjO1W0EFz6VMqBr_kurg6YW3huRcbip6yen7I7SDtBdHs9eFgO88uk8J68rbT9s-Y_N21I3yJexaoiJtgNyGx5nzsh-Ucz1eyxp9FyHjRGrhhivRPqnSNY9PkVrlT1S_LPWkmLUQr4V7B52PyBO-pUCEtU8WHQ_bNeWeW6drF9PJrawH4CKzqMiUbite2xRyvituo4e48RoX9jWRUfWQFrZXcnarWHVTsVNXkJXhFqdti6AqlBIJV3gazvAg",
@@ -62,21 +62,21 @@
     "features": [
       {
         "icon": "location_on",
-        "title": "Vía Zaragoza",
-        "description": "A 8 minutos del C.C. Nuestro Cartago con excelente transporte."
+        "title": "Sector Santa Ana",
+        "description": "A 5 minutos del C.C. Nuestro Cartago con excelente transporte. Alta valorización."
       },
       {
-        "icon": "pool",
-        "title": "Club House",
-        "description": "Piscina para adultos y niños, salón de eventos y BBQ."
+        "icon": "park",
+        "title": "Vivienda Bioclimática",
+        "description": "Cubierta bioclimática."
       },
       {
-        "icon": "security",
-        "title": "Seguridad Privada",
-        "description": "Portería con control sistematizado 24/7."
+        "icon": "verified",
+        "title": "Aplica Subsidio De Caja De Compensación",
+        "description": "Aplica a subsidios de cualquier caja de compensación."
       }
     ],
-    "deliveryYear": "2025 - 2026",
+    "deliveryYear": "2027 - 2028",
     "createdAt": "2026-09-08T21:19:36.320Z"
   }
 ]

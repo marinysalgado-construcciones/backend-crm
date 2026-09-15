@@ -294,7 +294,14 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
         }),
       });
 
-      const data = await res.json();
+      // Leer respuesta de forma segura (el backend viejo devuelve HTML si no conoce la ruta)
+      const rawText = await res.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        data = {};
+      }
       if (data.success) {
         setGoogleSheetWebhookUrl(url);
         try {
@@ -332,7 +339,14 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
         body: JSON.stringify({ webhookUrl: googleSheetWebhookUrl }),
       });
 
-      const data = await res.json();
+      // Leer respuesta de forma segura (el backend viejo devuelve HTML si no conoce la ruta)
+      const rawText = await res.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        data = {};
+      }
       if (res.ok) {
         await loadCrmData();
         return {
@@ -366,7 +380,14 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
         body: JSON.stringify({ webhookUrl: googleSheetWebhookUrl }),
       });
 
-      const data = await res.json();
+      // Leer respuesta de forma segura (el backend viejo devuelve HTML si no conoce la ruta)
+      const rawText = await res.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        data = {};
+      }
       if (res.ok && data.success) {
         await loadCrmData();
         return {
@@ -376,7 +397,9 @@ export const CrmApp: React.FC<CrmAppProps> = ({ onBackToLanding }) => {
       } else {
         return {
           success: false,
-          message: data.error || 'Error al importar desde Google Sheet.',
+          message:
+            data.error ||
+            'El servidor no reconoció la función de importación. Es necesario actualizar el backend (Render) a la última versión del código.',
         };
       }
     } catch (err: any) {

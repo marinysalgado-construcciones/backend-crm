@@ -169,21 +169,8 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
           ))}
         </div>
       ) : (
-        /* Empty State */
-        <div className="bg-white border border-[#E5E5DF] rounded-[32px] p-10 text-center max-w-lg mx-auto shadow-xs">
-          <span className="material-symbols-outlined text-[#9E9E8E] text-5xl mb-3">search_off</span>
-          <h3 className="text-xl font-serif text-[#4A4A30] mb-1">No encontramos proyectos con estos filtros</h3>
-          <p className="text-sm text-[#6B6B54] mb-6 font-light">
-            Prueba seleccionando otra ubicación o tipo de inmueble para visualizar nuestras viviendas disponibles.
-          </p>
-          <button
-            onClick={onClearFilters}
-            className="bg-[#5A5A40] text-white px-6 py-2.5 rounded-full font-semibold text-xs sm:text-sm hover:bg-[#4A4A30] transition-colors inline-flex items-center gap-2"
-          >
-            <span className="material-symbols-outlined text-[18px]">restart_alt</span>
-            Ver todos los proyectos
-          </button>
-        </div>
+        /* Empty State: sin datos reales en el inventario */
+        <p className="text-center text-[#6B6B54] text-sm font-light py-12">El inventario está vacío</p>
       )}
     </section>
   );

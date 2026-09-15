@@ -1,28 +1,14 @@
 /**
- * Google Apps Script (Code.gs) template for Marin & Salgado Construcciones S.A.S.
- * 
- * Instructions:
- * 1. Open Google Sheets (https://sheets.google.com) with the company Google account.
- * 2. Create a new Spreadsheet titled: "CRM_Marin_y_Salgado_Leads_PQRS"
- * 3. Go to Extensions > Apps Script (Extensiones > Apps Script).
- * 4. Erase any code in Code.gs and paste the code below.
- * 5. Click "Deploy" > "New deployment" (Implementar > Nueva implementación).
- * 6. Select type: "Web app" (Aplicación web).
- * 7. Execute as: "Me" (Yo: tu cuenta).
- * 8. Who has access: "Anyone" (Cualquier usuario / Anyone).
- * 9. Copy the Web App URL generated and paste it in the CRM configuration below.
- */
-
-export const GOOGLE_APPS_SCRIPT_CODE = `/**
  * Google Apps Script (Code.gs) - Marín & Salgado Construcciones S.A.S.
  * 
- * Versión 2.0: Compatibilidad total con nombres en español y escritura directa forzada.
+ * Versión 2.1: Incluye EXPORTACIÓN de datos para el botón "Importar" del Panel CRM.
  * Soporta todos los canales de captación:
  * 1. Formulario Web de Contacto / Asesoría
  * 2. Calculadora Financiera VIS (Simulación de cuota y subsidios)
  * 3. Asistente Virtual Inteligente (Chatbot Mariana)
  * 4. Canal Oficial de Atención al Ciudadano (PQRS con Radicado Oficial)
  * 5. Gestión Comercial y CRM Directo (actualización de estados y notas)
+ * 6. NUEVO: Exportación de datos hacia el Panel de Control Central
  */
 
 function doPost(e) {
@@ -378,37 +364,3 @@ function doGet(e) {
     ]
   })).setMimeType(ContentService.MimeType.JSON);
 }
-`;
-
-export const GOOGLE_SHEETS_SETUP_STEPS = [
-  {
-    step: 1,
-    title: 'Crear la Hoja de Cálculo en Google Drive',
-    desc: 'Inicia sesión con la cuenta de Google de la constructora (por ejemplo marinysalgadoconstrucciones@gmail.com) y crea una hoja de cálculo nueva llamada "CRM Marin & Salgado - Base de Datos".',
-  },
-  {
-    step: 2,
-    title: 'Abrir el Editor de Apps Script',
-    desc: 'Dentro de tu hoja de Google Sheets, ve al menú superior: Extensiones > Apps Script.',
-  },
-  {
-    step: 3,
-    title: 'Copiar y Pegar el Código',
-    desc: 'Borra cualquier código existente en el archivo Code.gs y pega el script oficial proporcionado en el botón "Copiar Script". Haz clic en el icono de Guardar.',
-  },
-  {
-    step: 4,
-    title: 'Desplegar como Aplicación Web',
-    desc: 'Haz clic en el botón azul "Implementar" (Deploy) > "Nueva implementación" > Selecciona tipo "Aplicación web". En "Quién tiene acceso" selecciona "Cualquier usuario" (Anyone) para que la página web pueda registrar prospectos sin requerir login público.',
-  },
-  {
-    step: 5,
-    title: 'Conectar la URL con el CRM',
-    desc: 'Copia la URL que termina en /exec y pégala en el campo de configuración de este CRM. A partir de ese momento, cada formulario web y PQRS se guardará en tu Excel en la nube en tiempo real.',
-  },
-  {
-    step: 6,
-    title: 'Seguridad y Privacidad',
-    desc: 'Solo el personal de Marín & Salgado con permiso en esa cuenta de Google o a quienes compartas la hoja tendrán acceso a visualizar o editar los datos.',
-  },
-];

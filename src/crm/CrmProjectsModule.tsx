@@ -215,6 +215,8 @@ export const CrmProjectsModule: React.FC<CrmProjectsModuleProps> = ({
           onProjectUpdated(data.project);
           onShowToast(`✓ Proyecto "${data.project.name}" actualizado correctamente`);
           setIsModalOpen(false);
+          // Re-consulta del catálogo para actualizar el frontend público
+          window.dispatchEvent(new Event('mys:catalog-updated'));
         } else {
           alert(data.error || 'Error al actualizar el proyecto');
         }
@@ -233,6 +235,8 @@ export const CrmProjectsModule: React.FC<CrmProjectsModuleProps> = ({
           onProjectCreated(data.project);
           onShowToast(`✓ Proyecto "${data.project.name}" creado exitosamente`);
           setIsModalOpen(false);
+          // Re-consulta del catálogo para actualizar el frontend público
+          window.dispatchEvent(new Event('mys:catalog-updated'));
         } else {
           alert(data.error || 'Error al crear el proyecto');
         }

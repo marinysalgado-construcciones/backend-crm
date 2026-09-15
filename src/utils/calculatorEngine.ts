@@ -1,15 +1,11 @@
 import { CalculatorInput, CalculatorResult } from '../types';
-import { SMMLV_CURRENT, PROJECTS } from '../data/projectsData';
+import { SMMLV_CURRENT } from '../data/projectsData';
 
 export function calculateVisMortgage(input: CalculatorInput): CalculatorResult {
   // 1. Determine base price
+  // El precio llega sincronizado desde el proyecto dinámico seleccionado en la
+  // calculadora (customPriceCOP); ya no se consulta la lista estática de proyectos.
   let totalHousePrice = input.customPriceCOP;
-  if (input.projectId !== 'custom') {
-    const selectedProj = PROJECTS.find((p) => p.id === input.projectId);
-    if (selectedProj) {
-      totalHousePrice = selectedProj.priceCOP;
-    }
-  }
 
   if (totalHousePrice <= 0) {
     totalHousePrice = 135 * SMMLV_CURRENT;

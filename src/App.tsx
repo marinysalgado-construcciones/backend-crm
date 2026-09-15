@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { ProjectsSection } from './components/ProjectsSection';
@@ -15,7 +15,6 @@ import { Chatbot } from './components/Chatbot';
 import { ProjectDetailModal } from './components/ProjectDetailModal';
 import { PropertiesSection } from './components/PropertiesSection';
 import { CrmApp } from './crm/CrmApp';
-import { PROJECTS } from './data/projectsData';
 import { Project, PropertyItem, CRMLead } from './types';
 import { apiUrl } from './api';
 
@@ -59,8 +58,8 @@ export default function App() {
     };
   }, []);
 
-  // Dynamic Projects and Properties state with seed/mock fallback
-  const [projectsList, setProjectsList] = useState<Project[]>(PROJECTS);
+  // Dynamic Projects and Properties state (real data only, no templates)
+  const [projectsList, setProjectsList] = useState<Project[]>([]);
   const [propertiesList, setPropertiesList] = useState<PropertyItem[]>([]);
 
   // Filters for Hero and Properties Catalog
@@ -72,51 +71,60 @@ export default function App() {
 
   // Modals & Navigation states
   const [selectedProjectForModal, setSelectedProjectForModal] = useState<Project | null>(null);
-  const [selectedProjectIdForCalc, setSelectedProjectIdForCalc] = useState<string>('urbanizacion-los-alamos');
+  const [selectedProjectIdForCalc, setSelectedProjectIdForCalc] = useState<string>('');
 
   // Background Leads state & feedback
   const [, setLeads] = useState<CRMLead[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Fetch initial dynamic data: leads, projects and properties
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const [leadsRes, projectsRes, propsRes] = await Promise.all([
-          fetch(apiUrl('/api/crm/leads')),
-          fetch(apiUrl('/api/projects')),
-          fetch(apiUrl('/api/properties')),
-        ]);
+  // Re-consulta los datos dinámicos del servidor: leads, proyectos y propiedades.
+  // Se ejecuta al montar la app y cada vez que el CRM guarda el catálogo.
+  const refreshCatalogData = useCallback(async () => {
+    try {
+      const [leadsRes, projectsRes, propsRes] = await Promise.all([
+        fetch(apiUrl('/api/crm/leads')),
+        fetch(apiUrl('/api/projects')),
+        fetch(apiUrl('/api/properties')),
+      ]);
 
-        if (leadsRes.ok) {
-          const data = await leadsRes.json();
-          if (data.leads) {
-            setLeads(data.leads);
-          }
+      if (leadsRes.ok) {
+        const data = await leadsRes.json();
+        if (data.leads) {
+          setLeads(data.leads);
         }
-
-        if (projectsRes.ok) {
-          const pData = await projectsRes.json();
-          if (pData.projects && pData.projects.length > 0) {
-            setProjectsList(pData.projects);
-          } else {
-            // Fallback seed projects
-            setProjectsList(PROJECTS);
-          }
-        }
-
-        if (propsRes.ok) {
-          const propData = await propsRes.json();
-          if (propData.properties && propData.properties.length > 0) {
-            setPropertiesList(propData.properties);
-          }
-        }
-      } catch (err) {
-        console.warn('Could not fetch server data initially, using fallback:', err);
       }
-    };
-    fetchInitialData();
+
+      if (projectsRes.ok) {
+        const pData = await projectsRes.json();
+        if (Array.isArray(pData.projects)) {
+          setProjectsList(pData.projects);
+        }
+      }
+
+      if (propsRes.ok) {
+        const propData = await propsRes.json();
+        if (Array.isArray(propData.properties)) {
+          setPropertiesList(propData.properties);
+        }
+      }
+    } catch (err) {
+      console.warn('Could not fetch server data:', err);
+    }
   }, []);
+
+  useEffect(() => {
+    refreshCatalogData();
+
+    // Cuando el CRM crea o actualiza (POST/PUT) un proyecto o propiedad,
+    // se vuelve a consultar el catálogo para actualizar el frontend sin recargar.
+    const handleCatalogUpdated = () => {
+      refreshCatalogData();
+    };
+    window.addEventListener('mys:catalog-updated', handleCatalogUpdated);
+    return () => {
+      window.removeEventListener('mys:catalog-updated', handleCatalogUpdated);
+    };
+  }, [refreshCatalogData]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -471,6 +479,7 @@ export default function App() {
 
         {/* 3. Interactive VIS Mortgage & Subsidies Calculator */}
         <VisCalculator
+          projects={projectsList}
           selectedProjectId={selectedProjectIdForCalc}
           onSaveLeadFromCalculator={handleSaveLeadFromCalculator}
         />

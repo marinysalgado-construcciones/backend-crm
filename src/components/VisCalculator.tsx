@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
-import { CalculatorInput } from '../types';
+import React, { useState, useEffect, useMemo } from 'react';
+import { CalculatorInput, Project } from '../types';
 import { calculateVisMortgage, formatCOP } from '../utils/calculatorEngine';
 import { generateSimulationPdf } from '../utils/generateSimulationPdf';
-import { PROJECTS, COMPANY_INFO } from '../data/projectsData';
+import { COMPANY_INFO } from '../data/projectsData';
 
 interface VisCalculatorProps {
+  projects: Project[];
   selectedProjectId?: string;
   onSaveLeadFromCalculator: (data: {
     name: string;
@@ -16,10 +17,11 @@ interface VisCalculatorProps {
 }
 
 export const VisCalculator: React.FC<VisCalculatorProps> = ({
+  projects,
   selectedProjectId,
   onSaveLeadFromCalculator,
 }) => {
-  const [projectId, setProjectId] = useState<string>(selectedProjectId || 'urbanizacion-los-alamos');
+  const [projectId, setProjectId] = useState<string>(selectedProjectId || '');
   const [customPrice, setCustomPrice] = useState<number>(195750000);
   const [householdIncome, setHouseholdIncome] = useState<number>(2); // 2 SMMLV
   const [hasCaja, setHasCaja] = useState<boolean>(true);
@@ -40,6 +42,24 @@ export const VisCalculator: React.FC<VisCalculatorProps> = ({
   const [clientEmail, setClientEmail] = useState<string>('');
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
 
+  // Sincroniza la calculadora con el catálogo dinámico (proyectos reales del CRM)
+  useEffect(() => {
+    if (projects.length === 0) return;
+    let targetId: string = projectId;
+    if (selectedProjectId && projects.some((p) => p.id === selectedProjectId)) {
+      targetId = selectedProjectId;
+    } else if (!projects.some((p) => p.id === projectId)) {
+      targetId = projects[0].id;
+    }
+    if (targetId !== projectId) {
+      setProjectId(targetId);
+    }
+    const target = projects.find((p) => p.id === targetId);
+    if (target && target.priceCOP) {
+      setCustomPrice(target.priceCOP);
+    }
+  }, [selectedProjectId, projects, projectId]);
+
   const calcInput: CalculatorInput = useMemo(
     () => ({
       projectId,
@@ -58,13 +78,13 @@ export const VisCalculator: React.FC<VisCalculatorProps> = ({
 
   const results = useMemo(() => calculateVisMortgage(calcInput), [calcInput]);
 
-  const selectedProjectObj = PROJECTS.find((p) => p.id === projectId);
+  const selectedProjectObj = projects.find((p) => p.id === projectId);
   const currentProjectName = selectedProjectObj ? selectedProjectObj.name : 'Vivienda VIS Personalizada';
 
   const handleProjectSelect = (id: string) => {
     setProjectId(id);
-    const p = PROJECTS.find((item) => item.id === id);
-    if (p) {
+    const p = projects.find((item) => item.id === id);
+    if (p && p.priceCOP) {
       setCustomPrice(p.priceCOP);
     }
   };
@@ -85,7 +105,7 @@ export const VisCalculator: React.FC<VisCalculatorProps> = ({
     try {
       generateSimulationPdf({
         projectName: currentProjectName,
-        projectType: selectedProjectObj ? selectedProjectObj.typeName : 'Vivienda VIS',
+        projectType: selectedProjectObj ? (selectedProjectObj.typeName || selectedProjectObj.projectType || 'Vivienda VIS') : 'Vivienda VIS',
         projectLocation: selectedProjectObj ? selectedProjectObj.location : 'Cartago, Valle del Cauca',
         priceSMMLV: selectedProjectObj ? selectedProjectObj.priceSMMLV : 135,
         totalPriceCOP: results.totalHousePrice,
@@ -170,22 +190,32 @@ export const VisCalculator: React.FC<VisCalculatorProps> = ({
                 Selecciona tu Proyecto o Inmueble VIS:
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {PROJECTS.map((proj) => (
-                  <button
-                    key={proj.id}
-                    type="button"
-                    onClick={() => handleProjectSelect(proj.id)}
-                    className={`p-3.5 rounded-2xl text-left border transition-all cursor-pointer ${
-                      projectId === proj.id
-                        ? 'border-[#5A5A40] bg-[#F5F5F0] ring-1 ring-[#5A5A40] shadow-xs'
-                        : 'border-[#E5E5DF] hover:bg-[#FDFCF8]'
-                    }`}
-                  >
-                    <div className="font-serif font-semibold text-sm text-[#4A4A30]">{proj.name}</div>
-                    <div className="text-[11px] text-[#6B6B54] mt-0.5">{proj.typeName} ({proj.areaMin} m²)</div>
-                    <div className="text-xs font-bold text-[#C1694F] mt-1.5">{formatCOP(proj.priceCOP)}</div>
-                  </button>
-                ))}
+                {projects.length === 0 ? (
+                  <p className="sm:col-span-2 text-center text-sm text-[#6B6B54] font-light py-6">
+                    El inventario está vacío
+                  </p>
+                ) : (
+                  projects.map((proj) => (
+                    <button
+                      key={proj.id}
+                      type="button"
+                      onClick={() => handleProjectSelect(proj.id)}
+                      className={`p-3.5 rounded-2xl text-left border transition-all cursor-pointer ${
+                        projectId === proj.id
+                          ? 'border-[#5A5A40] bg-[#F5F5F0] ring-1 ring-[#5A5A40] shadow-xs'
+                          : 'border-[#E5E5DF] hover:bg-[#FDFCF8]'
+                      }`}
+                    >
+                      <div className="font-serif font-semibold text-sm text-[#4A4A30]">{proj.name}</div>
+                      <div className="text-[11px] text-[#6B6B54] mt-0.5">
+                        {proj.typeName || proj.projectType || 'Proyecto VIS'}{proj.areaMin ? ` (${proj.areaMin} m²)` : ''}
+                      </div>
+                      <div className="text-xs font-bold text-[#C1694F] mt-1.5">
+                        {proj.priceCOP ? formatCOP(proj.priceCOP) : 'Precio a convenir'}
+                      </div>
+                    </button>
+                  ))
+                )}
               </div>
             </div>
 
